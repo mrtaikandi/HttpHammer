@@ -1,0 +1,5 @@
+requests:
+  test-request:
+    name: Test Request
+    url: ""
+    method: GET

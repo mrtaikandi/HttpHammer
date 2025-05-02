@@ -1,0 +1,6 @@
+requests:
+  test-request:
+    name: Test Request
+    url: https://example.com/api
+    method: GET
+    max_requests: -10

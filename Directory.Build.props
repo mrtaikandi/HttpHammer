@@ -1,0 +1,33 @@
+﻿<Project>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>Latest</LangVersion>
+        <UseArtifactsOutput>true</UseArtifactsOutput>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+        <RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
+        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\stylecop.ruleset</CodeAnalysisRuleSet>
+    </PropertyGroup>
+
+    <PropertyGroup Label="NuGet package properties">
+        <Authors>Mohammadreza Taikandi</Authors>
+        <PackageVersion>$(Version)</PackageVersion>
+        <PackageProjectUrl>https://github.com/mrtaikandi/HttpHammer</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mrtaikandi/HttpHammer</RepositoryUrl>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="$(MSBuildThisFileDirectory)\stylecop.json" Link="Properties\stylecop.json" />
+        <None Include="$(MSBuildProjectDirectory)\$(MSBuildProjectFile).DotSettings" Visible="false" />
+    </ItemGroup>
+
+</Project>

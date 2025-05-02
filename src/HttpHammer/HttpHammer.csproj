@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+        <IsAotCompatible>true</IsAotCompatible>
+        <IsPackable>true</IsPackable>
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>httphammer</ToolCommandName>
+        <PackageId>HttpHammer</PackageId>
+        <RollForward>Major</RollForward>
+        <PackageTags>loadtesting http performance benchmark stress testing load hammer</PackageTags>
+        <Description>Command line tool for load testing and benchmarking HTTP APIs.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.4" />
+        <PackageReference Include="Spectre.Console" Version="0.50.0" />
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta5.25251.102" />
+        <PackageReference Include="Vecc.YamlDotNet.Analyzers.StaticGenerator" Version="16.3.0" />
+        <PackageReference Include="vertical-spectreconsolelogger" Version="0.10.1-dev.20241201.35" />
+        <PackageReference Include="YamlDotNet" Version="16.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="$(AssemblyName).Tests" />
+        <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    </ItemGroup>
+
+</Project>

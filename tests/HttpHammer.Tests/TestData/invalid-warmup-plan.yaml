@@ -1,0 +1,9 @@
+warmup:
+  warmup-request:
+    name: Warmup Request
+    method: GET
+requests:
+  test-request:
+    name: Test Request
+    url: https://example.com/api
+    method: GET

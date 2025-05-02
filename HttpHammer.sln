@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpHammer", "src\HttpHammer\HttpHammer.csproj", "{BCF6E650-8DAF-4052-8E53-2FAC5FF9AC93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpHammer.Tests", "tests\HttpHammer.Tests\HttpHammer.Tests.csproj", "{0DC44503-247F-46FF-9BB7-090047D63784}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpHammer.TestApi", "tests\HttpHammer.TestApi\HttpHammer.TestApi.csproj", "{BD6D50C9-5E38-4579-A350-6C56E18CB341}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BCF6E650-8DAF-4052-8E53-2FAC5FF9AC93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCF6E650-8DAF-4052-8E53-2FAC5FF9AC93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCF6E650-8DAF-4052-8E53-2FAC5FF9AC93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCF6E650-8DAF-4052-8E53-2FAC5FF9AC93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DC44503-247F-46FF-9BB7-090047D63784}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DC44503-247F-46FF-9BB7-090047D63784}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DC44503-247F-46FF-9BB7-090047D63784}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DC44503-247F-46FF-9BB7-090047D63784}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD6D50C9-5E38-4579-A350-6C56E18CB341}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD6D50C9-5E38-4579-A350-6C56E18CB341}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD6D50C9-5E38-4579-A350-6C56E18CB341}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD6D50C9-5E38-4579-A350-6C56E18CB341}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
