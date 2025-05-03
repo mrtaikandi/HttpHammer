@@ -46,21 +46,12 @@ public class Profiler : IProfiler
 
     private sealed class InternalMeasurements
     {
-        private readonly ConcurrentBag<string> _errors = new();
         private readonly ConcurrentBag<long> _durationTicks = new();
+        private readonly ConcurrentBag<string> _errors = new();
         private long _count;
         private long _maxDurationTicks;
         private long _minDurationTicks = long.MaxValue;
         private long _totalDurationTicks;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddError(string? errorMessage)
-        {
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                _errors.Add(errorMessage);
-            }
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddDuration(TimeSpan duration)
@@ -93,6 +84,15 @@ public class Profiler : IProfiler
             while (Interlocked.CompareExchange(ref _maxDurationTicks, durationTicks, currentMax) != currentMax);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddError(string? errorMessage)
+        {
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                _errors.Add(errorMessage);
+            }
+        }
+
         public Measurements GetMeasurements()
         {
             var count = Interlocked.CompareExchange(ref _count, 0, 0);
@@ -107,6 +107,9 @@ public class Profiler : IProfiler
                 Total: GetTotalDuration(),
                 Errors: _errors.ToArray());
         }
+
+        public TimeSpan GetTotalDuration() =>
+            TimeSpan.FromTicks(Interlocked.CompareExchange(ref _totalDurationTicks, 0, 0));
 
         private TimeSpan GetMaxDuration() => TimeSpan.FromTicks(Interlocked.Read(ref _maxDurationTicks));
 
@@ -128,15 +131,12 @@ public class Profiler : IProfiler
             Array.Sort(sortedDurations);
 
             // Calculate the index for the percentile
-            var index = (int)Math.Ceiling((percentile / 100.0) * sortedDurations.Length) - 1;
+            var index = (int)Math.Ceiling(percentile / 100.0 * sortedDurations.Length) - 1;
 
             // Ensure the index is within bounds
             index = Math.Max(0, Math.Min(index, sortedDurations.Length - 1));
 
             return TimeSpan.FromTicks(sortedDurations[index]);
         }
-
-        public TimeSpan GetTotalDuration() =>
-            TimeSpan.FromTicks(Interlocked.CompareExchange(ref _totalDurationTicks, 0, 0));
     }
 }

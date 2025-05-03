@@ -124,7 +124,7 @@ public class JsonExtensionsTests
         var element = _testDocument.RootElement;
 
         // Act
-        var success = element.TryExtractJsonValue("", out var value);
+        var success = element.TryExtractJsonValue(string.Empty, out var value);
 
         // Assert
         success.ShouldBeTrue();
@@ -328,8 +328,6 @@ public class JsonExtensionsTests
         success.ShouldBeTrue();
         value.ShouldBe("second");
     }
-
-    // New tests for advanced JsonPath features
 
     [Fact]
     public void TryExtractJsonValue_WithRootIndicator_ReturnsValue()
