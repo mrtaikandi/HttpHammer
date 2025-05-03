@@ -54,6 +54,7 @@ public class FakeProgressTracker : IProgressTracker
     public void ClearMessages()
     {
         _messages.Clear();
+
         // Note: We can't clear messages in SynchronousProgress directly
         // as it doesn't expose a clear method
     }

@@ -55,14 +55,16 @@ public class RequestProcessorTests
         var requests = new Dictionary<string, RequestDefinition>
         {
             {
-                "request1", new RequestDefinition {
+                "request1", new RequestDefinition
+                {
                     Name = "Request 1",
                     MaxRequests = 10,
                     Url = "https://example.com/api1"
                 }
             },
             {
-                "request2", new RequestDefinition {
+                "request2", new RequestDefinition
+                {
                     Name = "Request 2",
                     MaxRequests = 20,
                     Url = "https://example.com/api2"
@@ -105,14 +107,16 @@ public class RequestProcessorTests
         var requests = new Dictionary<string, RequestDefinition>
         {
             {
-                "request1", new RequestDefinition {
+                "request1", new RequestDefinition
+                {
                     Name = "Request 1",
                     MaxRequests = 10,
                     Url = "https://example.com/api1"
                 }
             },
             {
-                "request2", new RequestDefinition {
+                "request2", new RequestDefinition
+                {
                     Name = "Request 2",
                     MaxRequests = 10,
                     Url = "https://example.com/api2"
@@ -155,7 +159,8 @@ public class RequestProcessorTests
         var requests = new Dictionary<string, RequestDefinition>
         {
             {
-                "request1", new RequestDefinition {
+                "request1", new RequestDefinition
+                {
                     Name = "Request 1",
                     MaxRequests = 10,
                     Url = "https://example.com/api"
@@ -195,7 +200,8 @@ public class RequestProcessorTests
         var requests = new Dictionary<string, RequestDefinition>
         {
             {
-                "request1", new RequestDefinition {
+                "request1", new RequestDefinition
+                {
                     Name = "Request 1",
                     MaxRequests = 10,
                     Url = "https://example.com/api"
@@ -283,7 +289,8 @@ public class RequestProcessorTests
         var requests = new Dictionary<string, RequestDefinition>
         {
             {
-                "zero-request", new RequestDefinition {
+                "zero-request", new RequestDefinition
+                {
                     Name = "Zero Request",
                     MaxRequests = 0, // Zero requests to make
                     Url = "https://example.com/api"

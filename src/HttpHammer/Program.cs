@@ -28,10 +28,23 @@ public class Program
         await app.StartAsync().ConfigureAwait(false);
 
         var rootCommand = app.Services.GetRequiredService<HammeringCommand>();
-        var config = new CommandLineConfiguration(rootCommand){ EnableDefaultExceptionHandler = true };
+        var config = new CommandLineConfiguration(rootCommand) { EnableDefaultExceptionHandler = true };
         var exitCode = await config.InvokeAsync(args).ConfigureAwait(false);
 
         return exitCode;
+    }
+
+    private static IAnsiConsole BuildAnsiConsole(IServiceProvider serviceProvider)
+    {
+        var settings = new AnsiConsoleSettings
+        {
+            Ansi = AnsiSupport.Detect,
+            Interactive = InteractionSupport.Detect,
+            ColorSystem = ColorSystemSupport.Detect
+        };
+
+        var ansiConsole = AnsiConsole.Create(settings);
+        return ansiConsole;
     }
 
     private static IHost BuildApplication(string[] args)
@@ -66,19 +79,6 @@ public class Program
         builder.Services.AddTransient<HammeringCommand>();
 
         return builder.Build();
-    }
-
-    private static IAnsiConsole BuildAnsiConsole(IServiceProvider serviceProvider)
-    {
-        var settings = new AnsiConsoleSettings
-        {
-            Ansi = AnsiSupport.Detect,
-            Interactive = InteractionSupport.Detect,
-            ColorSystem = ColorSystemSupport.Detect
-        };
-
-        var ansiConsole = AnsiConsole.Create(settings);
-        return ansiConsole;
     }
 
     private static void ConfigureLogging(ILoggingBuilder builder, string[] args)

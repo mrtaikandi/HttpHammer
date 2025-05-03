@@ -157,7 +157,6 @@ internal static partial class JsonExtensions
                 results.AddRange(FindAllRecursively(property.Value, path));
             }
         }
-
         else if (element.ValueKind == JsonValueKind.Array)
         {
             for (var i = 0; i < element.GetArrayLength(); i++)

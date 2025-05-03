@@ -12,12 +12,10 @@ var summaries = new[]
 app.MapGet("/weatherforecast", async () =>
     {
         var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
+                new WeatherForecast(
                     DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
                     Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
+                    summaries[Random.Shared.Next(summaries.Length)]))
             .ToArray();
 
         await Task.Delay(200);

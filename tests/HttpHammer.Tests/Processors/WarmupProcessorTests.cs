@@ -67,7 +67,7 @@ public class WarmupProcessorTests
 
         _httpMessageHandler.SetResponse(new HttpResponseMessage(HttpStatusCode.BadRequest)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         });
 
         var progress = new SynchronousProgress();
@@ -227,7 +227,7 @@ public class WarmupProcessorTests
 
         _httpMessageHandler.SetResponse(new HttpResponseMessage(HttpStatusCode.BadRequest)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         });
 
         var processor = CreateProcessor();
@@ -276,7 +276,7 @@ public class WarmupProcessorTests
 
         _httpMessageHandler.SetResponse(new HttpResponseMessage(HttpStatusCode.BadRequest)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         });
 
         var processor = CreateProcessor();
@@ -317,7 +317,7 @@ public class WarmupProcessorTests
 
         _httpMessageHandler.SetResponse(new HttpResponseMessage(HttpStatusCode.OK)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         });
 
         var processor = CreateProcessor();
@@ -592,7 +592,7 @@ public class WarmupProcessorTests
 
         _httpMessageHandler.SetResponse(new HttpResponseMessage(HttpStatusCode.NoContent)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         });
 
         var processor = CreateProcessor();
@@ -656,14 +656,14 @@ public class WarmupProcessorTests
 
         var firstResponse = new HttpResponseMessage(HttpStatusCode.OK)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         };
 
         firstResponse.Headers.Add("X-Auth-Token", "secret-token-123");
 
         var secondResponse = new HttpResponseMessage(HttpStatusCode.OK)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         };
 
         _httpMessageHandler.SetResponseQueue([firstResponse, secondResponse]);
@@ -671,8 +671,7 @@ public class WarmupProcessorTests
         // Use a separate client for each call
         _httpClientFactory.CreateClient().Returns(
             new HttpClient(_httpMessageHandler),
-            new HttpClient(_httpMessageHandler)
-        );
+            new HttpClient(_httpMessageHandler));
 
         var processor = CreateProcessor();
         var progressContext = Substitute.For<IProgressContext>();
@@ -727,7 +726,7 @@ public class WarmupProcessorTests
 
         var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         };
 
         response.Headers.Add("X-Request-Id", "abc123");
@@ -783,7 +782,7 @@ public class WarmupProcessorTests
 
         _httpMessageHandler.SetResponse(new HttpResponseMessage(HttpStatusCode.OK)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         });
 
         var processor = CreateProcessor();
@@ -941,7 +940,7 @@ public class WarmupProcessorTests
 
         var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         };
 
         response.Headers.Add("X-Different-Header", "some-value");
@@ -1067,15 +1066,14 @@ public class WarmupProcessorTests
             },
             new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent("", Encoding.UTF8, "application/json")
+                Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
             }
         ]);
 
         // Use a separate client for each call to avoid disposing issues
         _httpClientFactory.CreateClient().Returns(
             new HttpClient(_httpMessageHandler),
-            new HttpClient(_httpMessageHandler)
-        );
+            new HttpClient(_httpMessageHandler));
 
         var processor = CreateProcessor();
         var progressContext = Substitute.For<IProgressContext>();
@@ -1133,7 +1131,7 @@ public class WarmupProcessorTests
 
         _httpMessageHandler.SetResponse(new HttpResponseMessage(HttpStatusCode.BadRequest)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         });
 
         var processor = CreateProcessor();
@@ -1198,15 +1196,15 @@ public class WarmupProcessorTests
         _httpMessageHandler.SetResponseQueue([
             new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent("", Encoding.UTF8, "application/json")
+                Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
             },
             new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent("", Encoding.UTF8, "application/json")
+                Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
             },
             new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent("", Encoding.UTF8, "application/json")
+                Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
             }
         ]);
 
@@ -1214,8 +1212,7 @@ public class WarmupProcessorTests
         _httpClientFactory.CreateClient().Returns(
             new HttpClient(_httpMessageHandler),
             new HttpClient(_httpMessageHandler),
-            new HttpClient(_httpMessageHandler)
-        );
+            new HttpClient(_httpMessageHandler));
 
         var progressValues = new List<double>();
         var progress = new SynchronousProgress(v => progressValues.Add(v));
@@ -1381,7 +1378,7 @@ public class WarmupProcessorTests
 
         _httpMessageHandler.SetResponse(new HttpResponseMessage(HttpStatusCode.OK)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         });
 
         var processor = CreateProcessor();
@@ -1445,15 +1442,14 @@ public class WarmupProcessorTests
             },
             new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent("", Encoding.UTF8, "application/json")
+                Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
             }
         ]);
 
         // Use a separate client for each call to avoid disposing issues
         _httpClientFactory.CreateClient().Returns(
             new HttpClient(_httpMessageHandler),
-            new HttpClient(_httpMessageHandler)
-        );
+            new HttpClient(_httpMessageHandler));
 
         var processor = CreateProcessor();
         var progressContext = Substitute.For<IProgressContext>();
@@ -1536,13 +1532,14 @@ public class WarmupProcessorTests
 
         _httpMessageHandler.SetResponse(new HttpResponseMessage(HttpStatusCode.OK)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         });
 
         var progress = new SynchronousProgress();
         var progressContext = Substitute.For<IProgressContext>();
         progressContext.Create(Arg.Any<string>(), Arg.Any<int>())
-            .Returns(callInfo => {
+            .Returns(callInfo =>
+            {
                 progress.MaxValue(callInfo.ArgAt<int>(1));
                 return progress;
             });
@@ -1587,7 +1584,7 @@ public class WarmupProcessorTests
 
         _httpMessageHandler.SetResponse(new HttpResponseMessage(HttpStatusCode.OK)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         });
 
         var processor = CreateProcessor();
@@ -1641,7 +1638,7 @@ public class WarmupProcessorTests
 
         _httpMessageHandler.SetResponse(new HttpResponseMessage(HttpStatusCode.OK)
         {
-            Content = new StringContent("", Encoding.UTF8, "application/json")
+            Content = new StringContent(string.Empty, Encoding.UTF8, "application/json")
         });
 
         var processor = CreateProcessor();
@@ -1724,13 +1721,13 @@ public class WarmupProcessorTests
         capturedRequest.ShouldNotBeNull();
         capturedRequest.Method.ShouldBe(HttpMethod.Post);
         capturedRequest.RequestUri!.ToString().ShouldBe("https://example.com/api/auth/token");
-        
-        // Verify Content-Type header 
+
+        // Verify Content-Type header
         capturedRequest.Content!.Headers.ContentType!.MediaType.ShouldBe("application/x-www-form-urlencoded");
-        
+
         // Verify form data
         _httpMessageHandler.RequestContents.Last().ShouldBe("grant_type=client_credentials&client_id=test_client&client_secret=test_secret");
-        
+
         // Check that the response variables were extracted correctly
         result.IsSuccess.ShouldBeTrue();
         result.ShouldBeOfType<SuccessProcessorResult>();

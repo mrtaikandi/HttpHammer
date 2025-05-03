@@ -37,7 +37,7 @@ public class RequestProcessor : IProcessor
                 break;
             }
 
-            Debug.Assert(request.Name is not null);
+            Debug.Assert(request.Name is not null, "Request name should not be null");
             var progress = context.Progress.Create(request.Name, request.MaxRequests);
             var executionContext = new ExecutionContext(request, plan.Variables, progress);
 
