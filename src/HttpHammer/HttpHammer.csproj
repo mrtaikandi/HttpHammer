@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -17,7 +17,7 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.4" />
         <PackageReference Include="Spectre.Console" Version="0.50.0" />
-        <PackageReference Include="System.CommandLine" Version="2.0.0-beta5.25251.102" />
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta5.25252.1" />
         <PackageReference Include="Vecc.YamlDotNet.Analyzers.StaticGenerator" Version="16.3.0" />
         <PackageReference Include="vertical-spectreconsolelogger" Version="0.10.1-dev.20241201.35" />
         <PackageReference Include="YamlDotNet" Version="16.3.0" />
