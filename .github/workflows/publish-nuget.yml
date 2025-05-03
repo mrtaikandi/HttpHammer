@@ -30,5 +30,17 @@ jobs:
     - name: Pack
       run: dotnet pack src/HttpHammer/HttpHammer.csproj --configuration Release --no-build --nologo --output nupkgs
     
+    - name: Get version from Nerdbank.GitVersioning
+      id: nbgv
+      uses: dotnet/nbgv@master
+      with:
+        setAllVars: true
+    
     - name: Publish to NuGet
       run: dotnet nuget push nupkgs/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+    
+    - name: Create and push version tag
+      if: success()
+      run: |
+        git tag -a v${{ steps.nbgv.outputs.SimpleVersion }} -m "Release v${{ steps.nbgv.outputs.SimpleVersion }}"
+        git push origin v${{ steps.nbgv.outputs.SimpleVersion }}
