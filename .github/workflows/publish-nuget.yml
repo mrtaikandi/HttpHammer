@@ -34,6 +34,7 @@ jobs:
       id: nbgv
       uses: dotnet/nbgv@master
       with:
+        path: src/HttpHammer
         setAllVars: true
     
     - name: Publish to NuGet
