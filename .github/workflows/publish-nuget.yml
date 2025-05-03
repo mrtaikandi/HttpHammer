@@ -42,5 +42,7 @@ jobs:
     - name: Create and push version tag
       if: success()
       run: |
+        git config --local user.email "mrtaikandi@hotmail.com"
+        git config --local user.name "Mohammadreza Taikandi"      
         git tag -a v${{ steps.nbgv.outputs.SimpleVersion }} -m "Release v${{ steps.nbgv.outputs.SimpleVersion }}"
         git push origin v${{ steps.nbgv.outputs.SimpleVersion }}
