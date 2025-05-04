@@ -26,18 +26,18 @@ internal sealed class WarmupProcessor : IProcessor
     public async ValueTask<ProcessorResult> ExecuteAsync(ProcessorContext context, CancellationToken cancellationToken = default)
     {
         var plan = context.ExecutionPlan;
-        if (plan.WarmupRequests.Count == 0)
+        if (plan.WarmupRequests.Length == 0)
         {
             _logger.LogNoWarmupRequestsToExecute();
             return ProcessorResult.Success(plan);
         }
 
-        _logger.LogExecutingWarmupRequest(plan.WarmupRequests.Count);
-        var progress = context.Progress.Create(":fire: Warming up :fire:", plan.WarmupRequests.Count);
+        _logger.LogExecutingWarmupRequest(plan.WarmupRequests.Length);
+        var progress = context.Progress.Create(":fire: Warming up :fire:", plan.WarmupRequests.Length);
 
         try
         {
-            foreach (var (_, definition) in plan.WarmupRequests)
+            foreach (var definition in plan.WarmupRequests)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -45,7 +45,13 @@ internal sealed class WarmupProcessor : IProcessor
                     return ProcessorResult.Fail("Warmup request execution was cancelled.");
                 }
 
-                var error = await ExecuteRequestAsync(definition, plan.Variables, cancellationToken);
+                string? error = null;
+
+                if (definition is RequestDefinition requestDefinition)
+                {
+                    error = await ExecuteRequestAsync(requestDefinition, plan.Variables, cancellationToken);
+                }
+
                 progress.Increment();
 
                 if (error is not null)
@@ -67,7 +73,7 @@ internal sealed class WarmupProcessor : IProcessor
         }
     }
 
-    private async Task<string?> ExecuteRequestAsync(WarmupDefinition definition, IDictionary<string, string> variables, CancellationToken cancellationToken)
+    private async Task<string?> ExecuteRequestAsync(RequestDefinition definition, IDictionary<string, string> variables, CancellationToken cancellationToken)
     {
         _logger.LogExecutingWarmupRequestByName(definition.Name);
 
@@ -87,7 +93,7 @@ internal sealed class WarmupProcessor : IProcessor
 
     private async Task<string?> ProcessResponseAsync(
         HttpResponseMessage response,
-        WarmupDefinition definition,
+        RequestDefinition definition,
         IDictionary<string, string> variables,
         CancellationToken cancellationToken)
     {
@@ -123,7 +129,7 @@ internal sealed class WarmupProcessor : IProcessor
         }
     }
 
-    private (bool Success, string? Error) ExtractHeaderVariables(HttpResponseMessage response, WarmupDefinition definition, IDictionary<string, string> variables)
+    private (bool Success, string? Error) ExtractHeaderVariables(HttpResponseMessage response, RequestDefinition definition, IDictionary<string, string> variables)
     {
         if (definition.Response?.Headers is null)
         {
@@ -156,7 +162,7 @@ internal sealed class WarmupProcessor : IProcessor
 
     private async Task<(bool Success, string? Error)> ExtractContentVariablesAsync(
         HttpResponseMessage response,
-        WarmupDefinition definition,
+        RequestDefinition definition,
         IDictionary<string, string> variables,
         CancellationToken cancellationToken)
     {

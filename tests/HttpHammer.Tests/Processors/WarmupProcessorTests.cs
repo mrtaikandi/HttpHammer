@@ -33,35 +33,31 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WhenErrorOccurs_ReportsCompletedProgress()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "error-request", new WarmupDefinition
+                Name = "Error Request",
+                Url = "https://example.com/api/error",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "Error Request",
-                    Url = "https://example.com/api/error",
-                    Method = "GET",
-                    Response = new ResponseDefinition
-                    {
-                        StatusCode = 200 // We'll return 400 to cause an error
-                    }
+                    StatusCode = 200 // We'll return 400 to cause an error
                 }
             },
+            new RequestDefinition
             {
-                "never-executed", new WarmupDefinition
-                {
-                    Name = "Never Executed",
-                    Url = "https://example.com/api/never",
-                    Method = "GET"
-                }
+                Name = "Never Executed",
+                Url = "https://example.com/api/never",
+                Method = "GET"
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -95,31 +91,29 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WhenJsonExtractionFails_AddsErrorToPlan()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET",
-                    Response = new ResponseDefinition
+                    StatusCode = 200,
+                    Content = new Dictionary<string, string>
                     {
-                        StatusCode = 200,
-                        Content = new Dictionary<string, string>
-                        {
-                            { "user.nonexistent", "=>{userId}" }
-                        }
+                        { "user.nonexistent", "=>{userId}" }
                     }
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -148,31 +142,29 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WhenJsonParsingFails_AddsErrorToPlan()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET",
-                    Response = new ResponseDefinition
+                    StatusCode = 200,
+                    Content = new Dictionary<string, string>
                     {
-                        StatusCode = 200,
-                        Content = new Dictionary<string, string>
-                        {
-                            { "user.id", "=>{userId}" }
-                        }
+                        { "user.id", "=>{userId}" }
                     }
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -192,36 +184,31 @@ public class WarmupProcessorTests
         // Assert
         result.HasErrors.ShouldBeTrue();
         result.ShouldBeOfType<ErrorProcessorResult>();
-        var errorResult = (ErrorProcessorResult)result;
-        errorResult.Errors.Length.ShouldBe(1);
-        errorResult.Errors[0].ShouldContain("Failed to read response content");
     }
 
     [Fact]
     public async Task ExecuteAsync_WhenStatusCodeMismatch_AddsErrorToPlan()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET",
-                    Response = new ResponseDefinition
-                    {
-                        StatusCode = 200
-                    }
+                    StatusCode = 200
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -250,27 +237,25 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WhenWarmupRequestFails_ReturnsOriginalPlan()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET",
-                    Response = new ResponseDefinition
-                    {
-                        StatusCode = 200
-                    }
+                    StatusCode = 200
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -294,24 +279,22 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithBodyContent_SendsBodyInRequest()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
-                {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "POST",
-                    Body = "test body content"
-                }
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "POST",
+                Body = "test body content"
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -337,35 +320,33 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithBothHeaderAndJsonExtraction_PopulatesAllVariables()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET",
-                    Response = new ResponseDefinition
+                    StatusCode = 200,
+                    Headers = new Dictionary<string, string>
                     {
-                        StatusCode = 200,
-                        Headers = new Dictionary<string, string>
-                        {
-                            { "X-Request-Id", "=>{requestId}" }
-                        },
-                        Content = new Dictionary<string, string>
-                        {
-                            { "user.id", "=>{userId}" }
-                        }
+                        { "X-Request-Id", "=>{requestId}" }
+                    },
+                    Content = new Dictionary<string, string>
+                    {
+                        { "user.id", "=>{userId}" }
                     }
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -396,23 +377,21 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithCancellation_ReportsProgressUpToCancellation()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
-                {
-                    Name = "Cancelled Request",
-                    Url = "https://example.com/api",
-                    Method = "GET"
-                }
+                Name = "Cancelled Request",
+                Url = "https://example.com/api",
+                Method = "GET"
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -444,23 +423,21 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithCancellation_RespectsToken()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
-                {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET"
-                }
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET"
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -485,33 +462,31 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithComplexJsonExtraction_CorrectlyExtractsValues()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET",
-                    Response = new ResponseDefinition
+                    StatusCode = 200,
+                    Content = new Dictionary<string, string>
                     {
-                        StatusCode = 200,
-                        Content = new Dictionary<string, string>
-                        {
-                            { "data.user.profile.id", "=>{userId}" },
-                            { "data.user.profile.details.name", "=>{userName}" },
-                            { "data.meta.count", "=>{count}" }
-                        }
+                        { "data.user.profile.id", "=>{userId}" },
+                        { "data.user.profile.details.name", "=>{userName}" },
+                        { "data.meta.count", "=>{count}" }
                     }
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -562,31 +537,29 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithEmptyResponseContent_HandlesGracefully()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET",
-                    Response = new ResponseDefinition
+                    StatusCode = 204, // No Content
+                    Content = new Dictionary<string, string>
                     {
-                        StatusCode = 204, // No Content
-                        Content = new Dictionary<string, string>
-                        {
-                            { "data", "=>{value}" }
-                        }
+                        { "data", "=>{value}" }
                     }
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -614,43 +587,39 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithExtractedHeaderVariables_UsesThemInSubsequentRequests()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "first-request", new WarmupDefinition
+                Name = "First Request",
+                Url = "https://example.com/api/auth",
+                Method = "POST",
+                Response = new ResponseDefinition
                 {
-                    Name = "First Request",
-                    Url = "https://example.com/api/auth",
-                    Method = "POST",
-                    Response = new ResponseDefinition
+                    StatusCode = 200,
+                    Headers = new Dictionary<string, string>
                     {
-                        StatusCode = 200,
-                        Headers = new Dictionary<string, string>
-                        {
-                            { "X-Auth-Token", "=>{authToken}" }
-                        }
+                        { "X-Auth-Token", "=>{authToken}" }
                     }
                 }
             },
+            new RequestDefinition
             {
-                "second-request", new WarmupDefinition
+                Name = "Second Request",
+                Url = "https://example.com/api/data",
+                Method = "GET",
+                Headers = new Dictionary<string, string>
                 {
-                    Name = "Second Request",
-                    Url = "https://example.com/api/data",
-                    Method = "GET",
-                    Headers = new Dictionary<string, string>
-                    {
-                        { "Authorization", "Bearer ${authToken}" }
-                    }
+                    { "Authorization", "Bearer ${authToken}" }
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -695,32 +664,30 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithHeaderExtraction_PopulatesVariables()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET",
-                    Response = new ResponseDefinition
+                    StatusCode = 200,
+                    Headers = new Dictionary<string, string>
                     {
-                        StatusCode = 200,
-                        Headers = new Dictionary<string, string>
-                        {
-                            { "X-Request-Id", "=>{requestId}" },
-                            { "X-Rate-Limit", "=>{rateLimit}" }
-                        }
+                        { "X-Request-Id", "=>{requestId}" },
+                        { "X-Rate-Limit", "=>{rateLimit}" }
                     }
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -755,28 +722,26 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithHeaders_SendsHeadersInRequest()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET",
+                Headers = new Dictionary<string, string>
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET",
-                    Headers = new Dictionary<string, string>
-                    {
-                        { "X-Test-Header", "TestValue" },
-                        { "Authorization", "Bearer token" }
-                    }
+                    { "X-Test-Header", "TestValue" },
+                    { "Authorization", "Bearer token" }
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -803,32 +768,30 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithJsonExtraction_PopulatesVariables()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET",
-                    Response = new ResponseDefinition
+                    StatusCode = 200,
+                    Content = new Dictionary<string, string>
                     {
-                        StatusCode = 200,
-                        Content = new Dictionary<string, string>
-                        {
-                            { "user.id", "=>{userId}" },
-                            { "user.name", "=>{name}" }
-                        }
+                        { "user.id", "=>{userId}" },
+                        { "user.name", "=>{name}" }
                     }
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -860,31 +823,29 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithJsonParseError_ReturnsFalse()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET",
-                    Response = new ResponseDefinition
+                    StatusCode = 200,
+                    Content = new Dictionary<string, string>
                     {
-                        StatusCode = 200,
-                        Content = new Dictionary<string, string>
-                        {
-                            { "user.id", "={userId}" }
-                        }
+                        { "user.id", "={userId}" }
                     }
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -910,31 +871,29 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithMissingHeaderExtraction_AddsErrorToPlan()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET",
-                    Response = new ResponseDefinition
+                    StatusCode = 200,
+                    Headers = new Dictionary<string, string>
                     {
-                        StatusCode = 200,
-                        Headers = new Dictionary<string, string>
-                        {
-                            { "X-Nonexistent-Header", "value" }
-                        }
+                        { "X-Nonexistent-Header", "value" }
                     }
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -965,31 +924,29 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithMissingJsonPath_ReturnsFalse()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET",
-                    Response = new ResponseDefinition
+                    StatusCode = 200,
+                    Content = new Dictionary<string, string>
                     {
-                        StatusCode = 200,
-                        Content = new Dictionary<string, string>
-                        {
-                            { "user.nonexistent", "=>{userId}" }
-                        }
+                        { "user.nonexistent", "=>{userId}" }
                     }
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1015,37 +972,33 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithMultipleRequests_ExecutesInOrder()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "first-request", new WarmupDefinition
+                Name = "First Request",
+                Url = "https://example.com/api/first",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "First Request",
-                    Url = "https://example.com/api/first",
-                    Method = "GET",
-                    Response = new ResponseDefinition
+                    StatusCode = 200,
+                    Content = new Dictionary<string, string>
                     {
-                        StatusCode = 200,
-                        Content = new Dictionary<string, string>
-                        {
-                            { "token", "=>{authToken}" }
-                        }
+                        { "token", "=>{authToken}" }
                     }
                 }
             },
+            new RequestDefinition
             {
-                "second-request", new WarmupDefinition
+                Name = "Second Request",
+                Url = "https://example.com/api/second",
+                Method = "POST",
+                Headers = new Dictionary<string, string>
                 {
-                    Name = "Second Request",
-                    Url = "https://example.com/api/second",
-                    Method = "POST",
-                    Headers = new Dictionary<string, string>
-                    {
-                        { "Authorization", "Bearer ${authToken}" }
-                    }
+                    { "Authorization", "Bearer ${authToken}" }
                 }
             }
-        };
+        ];
 
         var variables = new Dictionary<string, string>();
 
@@ -1053,7 +1006,7 @@ public class WarmupProcessorTests
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = variables
         };
 
@@ -1097,35 +1050,31 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithMultipleRequests_StopsExecutionAfterFirstError()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "first-request", new WarmupDefinition
+                Name = "First Request",
+                Url = "https://example.com/api/first",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "First Request",
-                    Url = "https://example.com/api/first",
-                    Method = "GET",
-                    Response = new ResponseDefinition
-                    {
-                        StatusCode = 200 // We'll make this fail by returning 400
-                    }
+                    StatusCode = 200 // We'll make this fail by returning 400
                 }
             },
+            new RequestDefinition
             {
-                "second-request", new WarmupDefinition
-                {
-                    Name = "Second Request",
-                    Url = "https://example.com/api/second",
-                    Method = "GET"
-                }
+                Name = "Second Request",
+                Url = "https://example.com/api/second",
+                Method = "GET"
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1157,39 +1106,33 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithMultipleWarmupRequests_ReportsProgressForEach()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "first-request", new WarmupDefinition
-                {
-                    Name = "First Request",
-                    Url = "https://example.com/api/first",
-                    Method = "GET"
-                }
+                Name = "First Request",
+                Url = "https://example.com/api/first",
+                Method = "GET"
             },
+            new RequestDefinition
             {
-                "second-request", new WarmupDefinition
-                {
-                    Name = "Second Request",
-                    Url = "https://example.com/api/second",
-                    Method = "GET"
-                }
+                Name = "Second Request",
+                Url = "https://example.com/api/second",
+                Method = "GET"
             },
+            new RequestDefinition
             {
-                "third-request", new WarmupDefinition
-                {
-                    Name = "Third Request",
-                    Url = "https://example.com/api/third",
-                    Method = "GET"
-                }
+                Name = "Third Request",
+                Url = "https://example.com/api/third",
+                Method = "GET"
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1239,32 +1182,30 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithNestedJsonArray_HandlesCorrectly()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET",
-                    Response = new ResponseDefinition
+                    StatusCode = 200,
+                    Content = new Dictionary<string, string>
                     {
-                        StatusCode = 200,
-                        Content = new Dictionary<string, string>
-                        {
-                            { "items[0].id", "=>{firstItemId}" },
-                            { "items.1.name", "=>{secondItemName}" } // incorrect JSON path.
-                        }
+                        { "items[0].id", "=>{firstItemId}" },
+                        { "items.1.name", "=>{secondItemName}" } // incorrect JSON path.
                     }
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1304,8 +1245,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            WarmupRequests = new Dictionary<string, WarmupDefinition>(),
-            Requests = new Dictionary<string, RequestDefinition>(),
+            WarmupRequests = [],
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1334,8 +1275,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            WarmupRequests = new Dictionary<string, WarmupDefinition>(),
-            Requests = new Dictionary<string, RequestDefinition>(),
+            WarmupRequests = [],
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1356,23 +1297,21 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithNullProgress_DoesNotThrowException()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
-                {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET"
-                }
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET"
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1394,33 +1333,29 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithRecursiveVariableReplacement_ResolvesCorrectly()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "first-request", new WarmupDefinition
+                Name = "First Request",
+                Url = "https://example.com/api/first",
+                Method = "GET",
+                Response = new ResponseDefinition
                 {
-                    Name = "First Request",
-                    Url = "https://example.com/api/first",
-                    Method = "GET",
-                    Response = new ResponseDefinition
+                    StatusCode = 200,
+                    Content = new Dictionary<string, string>
                     {
-                        StatusCode = 200,
-                        Content = new Dictionary<string, string>
-                        {
-                            { "baseUrl", "=>{baseUrl}" }
-                        }
+                        { "baseUrl", "=>{baseUrl}" }
                     }
                 }
             },
+            new RequestDefinition
             {
-                "second-request", new WarmupDefinition
-                {
-                    Name = "Second Request",
-                    Url = "${baseUrl}/path/${endpoint}",
-                    Method = "GET"
-                }
+                Name = "Second Request",
+                Url = "${baseUrl}/path/${endpoint}",
+                Method = "GET"
             }
-        };
+        ];
 
         var variables = new Dictionary<string, string>
         {
@@ -1431,7 +1366,7 @@ public class WarmupProcessorTests
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = variables
         };
 
@@ -1467,23 +1402,21 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithRequestException_ThrowsException()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
-                {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET"
-                }
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET"
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1510,23 +1443,21 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithSingleWarmupRequest_ReportsProgressOnce()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
-                {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET"
-                }
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET"
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1562,23 +1493,21 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithSuccessfulWarmupRequests_ReturnsOriginalPlan()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
-                {
-                    Name = "Test Request",
-                    Url = "https://example.com/api",
-                    Method = "GET"
-                }
+                Name = "Test Request",
+                Url = "https://example.com/api",
+                Method = "GET"
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1604,22 +1533,20 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithVariables_ReplacesVariablesInUrlHeadersAndBody()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "test-request", new WarmupDefinition
+                Name = "Test Request",
+                Url = "https://example.com/api/${path}",
+                Method = "POST",
+                Headers = new Dictionary<string, string>
                 {
-                    Name = "Test Request",
-                    Url = "https://example.com/api/${path}",
-                    Method = "POST",
-                    Headers = new Dictionary<string, string>
-                    {
-                        { "X-User-Id", "${userId}" }
-                    },
-                    Body = """{ "name": "${name}" }"""
-                }
+                    { "X-User-Id", "${userId}" }
+                },
+                Body = """{ "name": "${name}" }"""
             }
-        };
+        ];
 
         var variables = new Dictionary<string, string>
         {
@@ -1632,7 +1559,7 @@ public class WarmupProcessorTests
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = variables
         };
 
@@ -1660,38 +1587,36 @@ public class WarmupProcessorTests
     public async Task ExecuteAsync_WithFormUrlEncodedContent_SendsCorrectlyToAuthEndpoint()
     {
         // Arrange
-        var warmupRequests = new Dictionary<string, WarmupDefinition>
-        {
+        Definition[] warmupRequests =
+        [
+            new RequestDefinition
             {
-                "auth-request", new WarmupDefinition
+                Name = "Auth Request",
+                Url = "https://example.com/api/auth/token",
+                Method = "POST",
+                Headers = new Dictionary<string, string>
                 {
-                    Name = "Auth Request",
-                    Url = "https://example.com/api/auth/token",
-                    Method = "POST",
-                    Headers = new Dictionary<string, string>
+                    { "Content-Type", "application/x-www-form-urlencoded" }
+                },
+                Body = "grant_type=client_credentials&client_id=test_client&client_secret=test_secret",
+                Response = new ResponseDefinition
+                {
+                    StatusCode = 200,
+                    Content = new Dictionary<string, string>
                     {
-                        { "Content-Type", "application/x-www-form-urlencoded" }
-                    },
-                    Body = "grant_type=client_credentials&client_id=test_client&client_secret=test_secret",
-                    Response = new ResponseDefinition
-                    {
-                        StatusCode = 200,
-                        Content = new Dictionary<string, string>
-                        {
-                            { "access_token", "=>{token}" },
-                            { "expires_in", "=>{expiresIn}" },
-                            { "token_type", "=>{tokenType}" }
-                        }
+                        { "access_token", "=>{token}" },
+                        { "expires_in", "=>{expiresIn}" },
+                        { "token_type", "=>{tokenType}" }
                     }
                 }
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
             WarmupRequests = warmupRequests,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 

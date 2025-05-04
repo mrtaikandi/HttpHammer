@@ -24,21 +24,20 @@ public class RequestProcessor : IProcessor
     public async ValueTask<ProcessorResult> ExecuteAsync(ProcessorContext context, CancellationToken cancellationToken = default)
     {
         var plan = context.ExecutionPlan;
-        if (plan.Requests.Count == 0)
+        if (plan.Requests.Length == 0)
         {
             return ProcessorResult.Fail("No requests to execute.");
         }
 
-        var tasks = new List<Task>(plan.Requests.Count);
-        foreach (var (_, request) in plan.Requests.Where(r => r.Value.MaxRequests > 0))
+        var tasks = new List<Task>(plan.Requests.Length);
+        foreach (var request in plan.Requests.Where(r => r.MaxRequests > 0))
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 break;
             }
 
-            Debug.Assert(request.Name is not null, "Request name should not be null");
-            var progress = context.Progress.Create(request.Name, request.MaxRequests);
+            var progress = context.Progress.Create(request.Name, request.MaxRequests ?? 1);
             var executionContext = new ExecutionContext(request, plan.Variables, progress);
 
             tasks.Add(
