@@ -1,4 +1,3 @@
 requests:
-  test-request:
-    name: Test Request
+  - name: Test Request
     method: GET

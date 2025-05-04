@@ -26,7 +26,7 @@ public class ExecutionPlanFileProcessor : IProcessor
                 return new ValueTask<ProcessorResult>(ProcessorResult.Fail("Failed to load execution plan from file."));
             }
 
-            NormalizeRequestDefinitions(executionPlan);
+            NormalizeDefinitions(executionPlan);
 
             return ValidateExecutionPlan(executionPlan) is { } error
                 ? new ValueTask<ProcessorResult>(ProcessorResult.Fail(error))
@@ -39,37 +39,41 @@ public class ExecutionPlanFileProcessor : IProcessor
         }
     }
 
-    private static void NormalizeRequestDefinitions(ExecutionPlan executionPlan)
+    private static void NormalizeDefinitions(ExecutionPlan executionPlan)
     {
-        foreach (var (name, request) in executionPlan.WarmupRequests)
+        foreach (var request in executionPlan.WarmupRequests.OfType<RequestDefinition>())
         {
-            NormalizeRequestDefinitions(name, request);
+            Normalize(request, 1, 1);
         }
 
-        foreach (var (name, request) in executionPlan.Requests)
+        foreach (var request in executionPlan.Requests)
         {
-            NormalizeRequestDefinitions(name, request);
-        }
-    }
-
-    private static void NormalizeRequestDefinitions(string name, BaseRequestDefinition request)
-    {
-        if (string.IsNullOrWhiteSpace(request.Name))
-        {
-            request.Name = name;
+            Normalize(request, 100, 10);
         }
 
-        if (request.MaxRequests < 0)
+        static void Normalize(RequestDefinition request, int defaultMaxRequest, int defaultConcurrentConnections)
         {
-            request.MaxRequests = 0;
+            request.MaxRequests = request.MaxRequests switch
+            {
+                null => defaultMaxRequest,
+                < 0 => 0,
+                _ => request.MaxRequests
+            };
+
+            request.ConcurrentConnections = request.ConcurrentConnections switch
+            {
+                null => defaultConcurrentConnections,
+                < 0 => 1,
+                _ => request.ConcurrentConnections
+            };
         }
     }
 
     private static string? ValidateExecutionPlan(ExecutionPlan executionPlan)
     {
-        var requests = executionPlan.WarmupRequests.Values
-            .OfType<BaseRequestDefinition>()
-            .Concat(executionPlan.Requests.Values);
+        var requests = executionPlan.WarmupRequests
+            .OfType<RequestDefinition>()
+            .Concat(executionPlan.Requests);
 
         foreach (var request in requests)
         {
@@ -97,7 +101,7 @@ public class ExecutionPlanFileProcessor : IProcessor
                 return null;
             }
 
-            var deserializer = new StaticDeserializerBuilder(new Configuration.ExecutionPlanYamlStaticContext())
+            var deserializer = new StaticDeserializerBuilder(new ExecutionPlanYamlStaticContext())
                 .WithNamingConvention(UnderscoredNamingConvention.Instance)
                 .IgnoreUnmatchedProperties()
                 .Build();

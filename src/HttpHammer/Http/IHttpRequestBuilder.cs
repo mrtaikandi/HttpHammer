@@ -4,5 +4,5 @@ namespace HttpHammer.Http;
 
 public interface IHttpRequestBuilder
 {
-    IHttpRequestMessage BuildRequest(BaseRequestDefinition definition, IDictionary<string, string> variables);
+    IHttpRequestMessage BuildRequest(RequestDefinition definition, IDictionary<string, string> variables);
 }

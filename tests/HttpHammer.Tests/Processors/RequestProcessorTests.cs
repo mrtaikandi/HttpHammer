@@ -29,7 +29,7 @@ public class RequestProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Requests = new Dictionary<string, RequestDefinition>(),
+            Requests = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -52,25 +52,21 @@ public class RequestProcessorTests
     public async Task ExecuteAsync_WithRequests_CallsExecutionPolicyForEach()
     {
         // Arrange
-        var requests = new Dictionary<string, RequestDefinition>
-        {
+        RequestDefinition[] requests =
+        [
+            new()
             {
-                "request1", new RequestDefinition
-                {
-                    Name = "Request 1",
-                    MaxRequests = 10,
-                    Url = "https://example.com/api1"
-                }
+                Name = "Request 1",
+                MaxRequests = 10,
+                Url = "https://example.com/api1"
             },
+            new()
             {
-                "request2", new RequestDefinition
-                {
-                    Name = "Request 2",
-                    MaxRequests = 20,
-                    Url = "https://example.com/api2"
-                }
+                Name = "Request 2",
+                MaxRequests = 20,
+                Url = "https://example.com/api2"
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
@@ -104,25 +100,21 @@ public class RequestProcessorTests
     public async Task ExecuteAsync_WhenCancelled_ReturnsWithoutError()
     {
         // Arrange
-        var requests = new Dictionary<string, RequestDefinition>
-        {
+        RequestDefinition[] requests =
+        [
+            new()
             {
-                "request1", new RequestDefinition
-                {
-                    Name = "Request 1",
-                    MaxRequests = 10,
-                    Url = "https://example.com/api1"
-                }
+                Name = "Request 1",
+                MaxRequests = 10,
+                Url = "https://example.com/api1"
             },
+            new()
             {
-                "request2", new RequestDefinition
-                {
-                    Name = "Request 2",
-                    MaxRequests = 10,
-                    Url = "https://example.com/api2"
-                }
+                Name = "Request 2",
+                MaxRequests = 10,
+                Url = "https://example.com/api2"
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
@@ -156,17 +148,15 @@ public class RequestProcessorTests
     public async Task ExecuteAsync_WithCancellationToken_PassesTokenToExecutionPolicy()
     {
         // Arrange
-        var requests = new Dictionary<string, RequestDefinition>
-        {
+        RequestDefinition[] requests =
+        [
+            new()
             {
-                "request1", new RequestDefinition
-                {
-                    Name = "Request 1",
-                    MaxRequests = 10,
-                    Url = "https://example.com/api"
-                }
+                Name = "Request 1",
+                MaxRequests = 10,
+                Url = "https://example.com/api"
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
@@ -197,17 +187,15 @@ public class RequestProcessorTests
     public async Task ExecuteAsync_PassesVariablesToExecutionContext()
     {
         // Arrange
-        var requests = new Dictionary<string, RequestDefinition>
-        {
+        RequestDefinition[] requests =
+        [
+            new()
             {
-                "request1", new RequestDefinition
-                {
-                    Name = "Request 1",
-                    MaxRequests = 10,
-                    Url = "https://example.com/api"
-                }
+                Name = "Request 1",
+                MaxRequests = 10,
+                Url = "https://example.com/api"
             }
-        };
+        ];
 
         var variables = new Dictionary<string, string>
         {
@@ -246,18 +234,14 @@ public class RequestProcessorTests
     public async Task ExecuteAsync_WithLargeNumberOfRequests_HandlesAllCorrectly()
     {
         // Arrange
-        var requests = new Dictionary<string, RequestDefinition>();
-
-        // Create 100 requests
-        for (var i = 1; i <= 100; i++)
-        {
-            requests.Add($"request{i}", new RequestDefinition
+        var requests = Enumerable.Range(0, 100)
+            .Select(i => new RequestDefinition
             {
                 Name = $"Request {i}",
                 MaxRequests = 1,
                 Url = $"https://example.com/api{i}"
-            });
-        }
+            })
+            .ToArray();
 
         var plan = new ExecutionPlan
         {
@@ -286,17 +270,15 @@ public class RequestProcessorTests
     public async Task ExecuteAsync_WithZeroMaxRequests_DoesNotCallExecutionPolicy()
     {
         // Arrange
-        var requests = new Dictionary<string, RequestDefinition>
-        {
+        RequestDefinition[] requests =
+        [
+            new()
             {
-                "zero-request", new RequestDefinition
-                {
-                    Name = "Zero Request",
-                    MaxRequests = 0, // Zero requests to make
-                    Url = "https://example.com/api"
-                }
+                Name = "Zero Request",
+                MaxRequests = 0, // Zero requests to make
+                Url = "https://example.com/api"
             }
-        };
+        ];
 
         var plan = new ExecutionPlan
         {
@@ -325,7 +307,7 @@ public class RequestProcessorTests
     public async Task ExecuteAsync_WithEmptyExecutionPlan_StillReturnsSuccess()
     {
         // Arrange
-        var requests = new Dictionary<string, RequestDefinition>();
+        RequestDefinition[] requests = [];
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,

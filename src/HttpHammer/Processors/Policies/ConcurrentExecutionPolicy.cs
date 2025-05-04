@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using HttpHammer.Http;
 
 namespace HttpHammer.Processors.Policies;
@@ -14,16 +15,23 @@ internal class ConcurrentExecutionPolicy : IExecutionPolicy
     public async Task ExecuteAsync(ExecutionContext context, CancellationToken cancellationToken = default)
     {
         var request = context.Request;
-        var batchSize = Math.Min(request.ConcurrentConnections, request.MaxRequests);
 
-        for (var offset = 0; offset < request.MaxRequests; offset += batchSize)
+        Debug.Assert(request.ConcurrentConnections != null, "concurrentConnections should not be null");
+        var concurrentConnections = request.ConcurrentConnections.Value;
+
+        Debug.Assert(request.MaxRequests != null, "maxRequests should not be null");
+        var maxRequests = request.MaxRequests.Value;
+
+        var batchSize = Math.Min(concurrentConnections, maxRequests);
+
+        for (var offset = 0; offset < maxRequests; offset += batchSize)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 break;
             }
 
-            var currentBatchSize = Math.Min(batchSize, request.MaxRequests - offset);
+            var currentBatchSize = Math.Min(batchSize, maxRequests - offset);
             var tasks = new List<Task>(currentBatchSize);
 
             for (var i = 0; i < currentBatchSize; i++)

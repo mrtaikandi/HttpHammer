@@ -1,7 +1,6 @@
 variables:
   custom_var: custom_value
 requests:
-  test-request:
-    name: Test Request
+  - name: Test Request
     url: https://example.com/api
     method: GET

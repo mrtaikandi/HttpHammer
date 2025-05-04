@@ -15,7 +15,7 @@ internal class HttpRequestBuilder : IHttpRequestBuilder
         _httpClientFactory = httpClientFactory;
     }
 
-    public IHttpRequestMessage BuildRequest(BaseRequestDefinition definition, IDictionary<string, string> variables)
+    public IHttpRequestMessage BuildRequest(RequestDefinition definition, IDictionary<string, string> variables)
     {
         var url = _variableHandler.Substitute(definition.Url, variables);
         var httpMethod = new HttpMethod(definition.Method.ToUpperInvariant());
@@ -29,7 +29,7 @@ internal class HttpRequestBuilder : IHttpRequestBuilder
         return new HttpRequestMessage(httpRequest, _httpClientFactory);
     }
 
-    private void AddHeaders(System.Net.Http.HttpRequestMessage httpRequest, BaseRequestDefinition definition, IDictionary<string, string> variables)
+    private void AddHeaders(System.Net.Http.HttpRequestMessage httpRequest, RequestDefinition definition, IDictionary<string, string> variables)
     {
         foreach (var header in definition.Headers)
         {
@@ -38,7 +38,7 @@ internal class HttpRequestBuilder : IHttpRequestBuilder
         }
     }
 
-    private void AddBody(System.Net.Http.HttpRequestMessage httpRequest, BaseRequestDefinition definition, IDictionary<string, string> variables)
+    private void AddBody(System.Net.Http.HttpRequestMessage httpRequest, RequestDefinition definition, IDictionary<string, string> variables)
     {
         if (string.IsNullOrWhiteSpace(definition.Body))
         {

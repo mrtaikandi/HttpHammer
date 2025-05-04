@@ -15,6 +15,9 @@ public abstract record ProcessorResult
 
 public record ProcessorResult<T>(T Result) : ProcessorResult;
 
-public sealed record ErrorProcessorResult(string[] Errors) : ProcessorResult;
+public sealed record ErrorProcessorResult(string[] Errors) : ProcessorResult
+{
+    public override string ToString() => $"Error: {string.Join(", ", Errors)}";
+}
 
 public sealed record SuccessProcessorResult(ExecutionPlan ExecutionPlan, string[] Warnings) : ProcessorResult;

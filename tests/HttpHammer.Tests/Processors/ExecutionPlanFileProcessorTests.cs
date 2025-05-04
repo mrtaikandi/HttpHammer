@@ -23,14 +23,13 @@ public class ExecutionPlanFileProcessorTests
         var result = await processor.ExecuteAsync(context);
 
         // Assert
-        result.IsSuccess.ShouldBeTrue();
+        result.IsSuccess.ShouldBeTrue(result.ToString());
         result.ShouldBeOfType<SuccessProcessorResult>();
         var successResult = (SuccessProcessorResult)result;
-        successResult.ExecutionPlan.Requests.Count.ShouldBe(1);
-        successResult.ExecutionPlan.Requests.ShouldContainKey("test-request");
-        successResult.ExecutionPlan.Requests["test-request"].Name.ShouldBe("Test Request");
-        successResult.ExecutionPlan.Requests["test-request"].Url.ShouldBe("https://example.com/api");
-        successResult.ExecutionPlan.Requests["test-request"].Method.ShouldBe("GET");
+        successResult.ExecutionPlan.Requests.Length.ShouldBe(1);
+        successResult.ExecutionPlan.Requests[0].Name.ShouldBe("Test Request");
+        successResult.ExecutionPlan.Requests[0].Url.ShouldBe("https://example.com/api");
+        successResult.ExecutionPlan.Requests[0].Method.ShouldBe("GET");
         successResult.ExecutionPlan.Variables.ShouldContainKey("timestamp");
     }
 
@@ -134,7 +133,7 @@ public class ExecutionPlanFileProcessorTests
         result.IsSuccess.ShouldBeTrue();
         result.ShouldBeOfType<SuccessProcessorResult>();
         var successResult = (SuccessProcessorResult)result;
-        successResult.ExecutionPlan.Requests["test-request"].Name.ShouldBe("test-request");
+        successResult.ExecutionPlan.Requests[0].Name.ShouldBe("test-request");
     }
 
     [Fact]
@@ -153,7 +152,7 @@ public class ExecutionPlanFileProcessorTests
         result.IsSuccess.ShouldBeTrue();
         result.ShouldBeOfType<SuccessProcessorResult>();
         var successResult = (SuccessProcessorResult)result;
-        successResult.ExecutionPlan.Requests["test-request"].MaxRequests.ShouldBe(0);
+        successResult.ExecutionPlan.Requests[0].MaxRequests.ShouldBe(0);
     }
 
     [Fact]
@@ -172,10 +171,10 @@ public class ExecutionPlanFileProcessorTests
         result.IsSuccess.ShouldBeTrue();
         result.ShouldBeOfType<SuccessProcessorResult>();
         var successResult = (SuccessProcessorResult)result;
-        successResult.ExecutionPlan.WarmupRequests.Count.ShouldBe(1);
-        successResult.ExecutionPlan.Requests.Count.ShouldBe(1);
-        successResult.ExecutionPlan.WarmupRequests.ShouldContainKey("warmup-request");
-        successResult.ExecutionPlan.Requests.ShouldContainKey("test-request");
+        successResult.ExecutionPlan.WarmupRequests.Length.ShouldBe(1);
+        successResult.ExecutionPlan.WarmupRequests[0].Name.ShouldBe("Warmup Request");
+        successResult.ExecutionPlan.Requests.Length.ShouldBe(1);
+        successResult.ExecutionPlan.Requests[0].Name.ShouldBe("Test Request");
     }
 
     [Fact]
