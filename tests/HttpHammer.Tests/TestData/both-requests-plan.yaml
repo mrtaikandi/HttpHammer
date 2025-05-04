@@ -3,6 +3,7 @@ warmup:
       name: Warmup Request
       url: https://example.com/warmup
       method: GET
+
 requests:
   - name: Test Request
     url: https://example.com/api

@@ -26,18 +26,18 @@ internal sealed class WarmupProcessor : IProcessor
     public async ValueTask<ProcessorResult> ExecuteAsync(ProcessorContext context, CancellationToken cancellationToken = default)
     {
         var plan = context.ExecutionPlan;
-        if (plan.WarmupRequests.Length == 0)
+        if (plan.Warmups.Length == 0)
         {
             _logger.LogNoWarmupRequestsToExecute();
             return ProcessorResult.Success(plan);
         }
 
-        _logger.LogExecutingWarmupRequest(plan.WarmupRequests.Length);
-        var progress = context.Progress.Create(":fire: Warming up :fire:", plan.WarmupRequests.Length);
+        _logger.LogExecutingWarmupRequest(plan.Warmups.Length);
+        var progress = context.Progress.Create(":fire: Warming up :fire:", plan.Warmups.Length);
 
         try
         {
-            foreach (var definition in plan.WarmupRequests)
+            foreach (var definition in plan.Warmups)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {

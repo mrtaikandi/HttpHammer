@@ -41,7 +41,7 @@ public class ExecutionPlanFileProcessor : IProcessor
 
     private static void NormalizeDefinitions(ExecutionPlan executionPlan)
     {
-        foreach (var request in executionPlan.WarmupRequests.OfType<RequestDefinition>())
+        foreach (var request in executionPlan.Warmups.OfType<RequestDefinition>())
         {
             Normalize(request, 1, 1);
         }
@@ -53,6 +53,7 @@ public class ExecutionPlanFileProcessor : IProcessor
 
         static void Normalize(RequestDefinition request, int defaultMaxRequest, int defaultConcurrentConnections)
         {
+            request.Method = request.Method.ToUpperInvariant();
             request.MaxRequests = request.MaxRequests switch
             {
                 null => defaultMaxRequest,
@@ -71,7 +72,7 @@ public class ExecutionPlanFileProcessor : IProcessor
 
     private static string? ValidateExecutionPlan(ExecutionPlan executionPlan)
     {
-        var requests = executionPlan.WarmupRequests
+        var requests = executionPlan.Warmups
             .OfType<RequestDefinition>()
             .Concat(executionPlan.Requests);
 
@@ -80,6 +81,11 @@ public class ExecutionPlanFileProcessor : IProcessor
             if (string.IsNullOrWhiteSpace(request.Url))
             {
                 return $"Request '{request.Name}' URL is missing or empty.";
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+            {
+                return $"Request '{request.Method}: {request.Url}' name is missing or empty.";
             }
         }
 

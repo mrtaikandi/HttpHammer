@@ -118,7 +118,7 @@ public class ExecutionPlanFileProcessorTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_WithEmptyRequestName_SetsNameFromKey()
+    public async Task ExecuteAsync_WithEmptyRequestName_ReturnsValidationError()
     {
         // Arrange
         var filePath = Path.Combine(_testDataPath, "empty-name-plan.yaml");
@@ -130,10 +130,33 @@ public class ExecutionPlanFileProcessorTests
         var result = await processor.ExecuteAsync(context);
 
         // Assert
-        result.IsSuccess.ShouldBeTrue();
-        result.ShouldBeOfType<SuccessProcessorResult>();
-        var successResult = (SuccessProcessorResult)result;
-        successResult.ExecutionPlan.Requests[0].Name.ShouldBe("test-request");
+        result.IsSuccess.ShouldBeFalse();
+        result.HasErrors.ShouldBeTrue();
+        result.ShouldBeOfType<ErrorProcessorResult>();
+        var errorResult = (ErrorProcessorResult)result;
+        errorResult.Errors.Length.ShouldBe(1);
+        errorResult.Errors[0].ShouldBe("Request 'GET: https://example.com/api' name is missing or empty.");
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithMissingRequestName_ReturnsValidationError()
+    {
+        // Arrange
+        var filePath = Path.Combine(_testDataPath, "missing-name-plan.yaml");
+        var processor = new ExecutionPlanFileProcessor(_logger);
+        var progressContext = Substitute.For<IProgressContext>();
+        var context = new ProcessorContext(new ExecutionPlan { FilePath = filePath }, progressContext);
+
+        // Act
+        var result = await processor.ExecuteAsync(context);
+
+        // Assert
+        result.IsSuccess.ShouldBeFalse();
+        result.HasErrors.ShouldBeTrue();
+        result.ShouldBeOfType<ErrorProcessorResult>();
+        var errorResult = (ErrorProcessorResult)result;
+        errorResult.Errors.Length.ShouldBe(1);
+        errorResult.Errors[0].ShouldBe("Request 'GET: https://example.com/api' name is missing or empty.");
     }
 
     [Fact]
@@ -171,8 +194,8 @@ public class ExecutionPlanFileProcessorTests
         result.IsSuccess.ShouldBeTrue();
         result.ShouldBeOfType<SuccessProcessorResult>();
         var successResult = (SuccessProcessorResult)result;
-        successResult.ExecutionPlan.WarmupRequests.Length.ShouldBe(1);
-        successResult.ExecutionPlan.WarmupRequests[0].Name.ShouldBe("Warmup Request");
+        successResult.ExecutionPlan.Warmups.Length.ShouldBe(1);
+        successResult.ExecutionPlan.Warmups[0].Name.ShouldBe("Warmup Request");
         successResult.ExecutionPlan.Requests.Length.ShouldBe(1);
         successResult.ExecutionPlan.Requests[0].Name.ShouldBe("Test Request");
     }
@@ -181,7 +204,7 @@ public class ExecutionPlanFileProcessorTests
     public async Task ExecuteAsync_WithWarmupRequestMissingUrl_ReturnsValidationError()
     {
         // Arrange
-        var filePath = Path.Combine(_testDataPath, "invalid-warmup-plan.yaml");
+        var filePath = Path.Combine(_testDataPath, "missing-warmup-requestUrl-plan.yaml");
         var processor = new ExecutionPlanFileProcessor(_logger);
         var progressContext = Substitute.For<IProgressContext>();
         var context = new ProcessorContext(new ExecutionPlan { FilePath = filePath }, progressContext);
