@@ -14,21 +14,9 @@ public class ProcessorFactory : IProcessorFactory
 
     public IProcessor Create(Definition definition) => definition switch
     {
-        RequestDefinition request => _serviceProvider.GetRequiredService<RequestProcessor>(),
+        RequestDefinition => _serviceProvider.GetRequiredService<RequestProcessor>(),
+        DelayDefinition => _serviceProvider.GetRequiredService<DelayProcessor>(),
 
-        // DelayDefinition delay => _serviceProvider.GetRequiredService<IDelayProcessor>(),
-        // PromptDefinition prompt => _serviceProvider.GetRequiredService<IPromptProcessor>(),
         _ => throw new NotSupportedException($"Unsupported definition type: {definition.GetType().Name}")
     };
-
-    public IProcessor Create<TDefinition>() where TDefinition : Definition
-    {
-        var definitionType = typeof(TDefinition);
-        if (definitionType == typeof(RequestDefinition))
-        {
-            return _serviceProvider.GetRequiredService<RequestProcessor>();
-        }
-
-        throw new NotSupportedException($"Unsupported definition type: {definitionType.Name}");
-    }
 }

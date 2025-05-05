@@ -6,5 +6,7 @@ public interface IProgress
 
     void Increment();
 
-    void Complete();
+    void Complete(int? value = null);
+
+    bool IsIndeterminate { get; set; }
 }

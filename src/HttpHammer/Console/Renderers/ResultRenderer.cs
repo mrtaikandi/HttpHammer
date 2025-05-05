@@ -12,6 +12,8 @@ internal static class ResultRenderer
             return;
         }
 
+        // console.Clear();
+        // console.ShowSplashScreen();
         var table = new Table { Expand = true };
         table.AddColumns("Request", "Min", "P50", "P75", "P95", "Max", "Duration", "# Requests", "# Errors");
 

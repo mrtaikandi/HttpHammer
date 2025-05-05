@@ -19,7 +19,9 @@ public class SynchronousProgress : IProgress
 
     public IReadOnlyCollection<ProgressMessage> Messages => _messages.ToArray();
 
-    public void Complete() => CurrentValue = MaximumValue;
+    public void Complete(int? value = null) => CurrentValue = value ?? MaximumValue;
+
+    public bool IsIndeterminate { get; set; }
 
     public void Increment()
     {
