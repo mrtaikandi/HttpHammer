@@ -15,6 +15,8 @@ A command line tool for load testing and benchmarking HTTP APIs. HttpHammer allo
 - Detailed performance metrics and reporting
 - Support for multiple HTTP methods (GET, POST, PUT, etc.)
 - Header and body customization for requests
+- Interactive mode with progress tracking
+- Support for delays and user prompts in test plans
 
 ## Installation
 
@@ -46,7 +48,7 @@ If you don't specify a file, you will be prompted to enter the path to your YAML
 
 - `--file`, `-f` - Path to the plan YAML configuration file
 - `--debug`, `-d` - Enable debug logging to the console
-- `--verbose`, `-v` - Enable verbose logging to the console
+- `--verbose`, `-v` - Enable verbose logging to the console (requires --debug)
 
 ## Configuration Format
 
@@ -58,22 +60,21 @@ variables:
   apiVersion: 1.0
 
 warmup:
-  authenticate:
-    name: Authenticate
-    description: Request token with password-grant
-    method: POST
-    url: ${baseUrl}/auth
-    headers:
-      Content-Type: application/x-www-form-urlencoded
-    body: "grant_type=password&username=admin&password=admin"
-    response:
-      status_code: 200
-      content:
-        access_token: =>{access_token}
+  - request:
+      name: Authenticate
+      description: Request token with password-grant
+      method: POST
+      url: ${baseUrl}/auth
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+      body: "grant_type=password&username=admin&password=admin"
+      response:
+        status_code: 200
+        content:
+          access_token: =>{access_token}
 
 requests:
-  get-data:
-    name: Get Data
+  - name: Get Data
     description: Fetch data from the API
     concurrent_connections: 10
     max_requests: 100
@@ -109,21 +110,33 @@ Requests that are executed **sequentially** before the main test starts. Useful 
 
 ```yaml
 warmup:
-  request-name:
-    name: Human readable name
-    description: Description of what the request does
-    method: HTTP method (GET, POST, etc.)
-    url: URL for the request, can use variables like ${baseUrl}
-    max_requests: Maximum number of requests to send (default: 1)
-    headers:
-      Header-Name: Header value
-    body: Request body (string or JSON)
-    response:
-      status_code: Expected status code (default: 200)
-      content:
-        json_field: =>{variable_name}  # Extract json_filed value and store in variable_name
+  - request: # Defines an HTTP request
+      name: # The request display name
+      description: # Description of what the request does
+      method: # HTTP method (GET, POST, etc.)
+      url: # URL for the request, can use variables like ${baseUrl}
+      max_requests: # Maximum number of requests to send (default: 1)
       headers:
-        header-name: =>{variable_name}  # Extract header-name value and store in variable_name
+        Header-Name: # Header value
+      body: # Request body (string or JSON)
+      response:
+        status_code: # Expected status code (default: 200)
+        content:
+          json_field: =>{variable_name}  # Extract json_filed value and store in variable_name
+        headers:
+          header-name: =>{variable_name}  # Extract header-name value and store in variable_name
+
+  - delay: # Pause execution for a specified duration
+      name: # The delay display name
+      duration: # Duration in milliseconds
+
+  - prompt: # Request user input during the test
+        name: # The prompt display name
+        message: # Message to display to the user
+        allow_empty: # Whether to allow empty input (default: false)
+        secret: # Whether to hide input like a password (default: false)
+        variable: # Variable name to store the input
+        default: # Default value to display in the prompt
 ```
 
 #### Requests
@@ -132,16 +145,44 @@ The main requests that will be executed concurrently.
 
 ```yaml
 requests:
-  request-name:
-    name: Human readable name
-    description: Description of what the request does
-    concurrent_connections: Number of concurrent connections (default: 10)
-    max_requests: Maximum number of requests to send (default: 100)
-    method: HTTP method (GET, POST, etc.)
-    url: URL for the request, can use variables like ${baseUrl}
+  - name: # The request display name
+    description: # Description of what the request does
+    method: # HTTP method (GET, POST, etc.)
+    url: # URL for the request, can use variables like ${baseUrl}
+    max_requests: # Maximum number of requests to send (default: 1)
     headers:
-      Header-Name: Header value
-    body: Request body (string or JSON)
+      Header-Name: # Header value
+    body: # Request body (string or JSON)
+```
+
+#### Special Processors
+
+HttpHammer supports special processors for more complex test scenarios. These processors can be used in the `warmup` section to perform actions like delays, user prompts, and more.
+
+##### Delay Processor
+
+Pause execution for a specified duration:
+
+```yaml
+warmup:
+  - delay: # Pause execution for a specified duration
+    name: # The delay display name
+    duration: # Duration in milliseconds
+```
+
+##### Prompt Processor
+
+Request user input during the test:
+
+```yaml
+warmup:
+  - prompt:
+      name: # The prompt display name
+      message: # Message to display to the user
+      allow_empty: # Whether to allow empty input (default: false)
+      secret: # Whether to hide input like a password (default: false)
+      variable: # Variable name to store the input
+      default: # Default value to display in the prompt
 ```
 
 ## License
@@ -151,4 +192,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
