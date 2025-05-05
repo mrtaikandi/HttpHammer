@@ -183,7 +183,7 @@ public class RequestProcessor : IProcessor
         catch (Exception ex)
         {
             _logger.LogResponseProcessingFailed(ex, definition.Name, ex.Message);
-            return ProcessorResult.Fail($"Failed to process response for warmup request '{definition.Name}': {ex.Message}");
+            return ProcessorResult.Fail($"Failed to process response for request '{definition.Name}': {ex.Message}");
         }
     }
 
