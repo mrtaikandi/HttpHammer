@@ -67,6 +67,7 @@ public class Program
         // Processors
         builder.Services.AddSingleton<IProcessorFactory, ProcessorFactory>();
         builder.Services.AddScoped<RequestProcessor>();
+        builder.Services.AddScoped<DelayProcessor>();
 
         builder.Services.AddTransient<IExecutionPlanLoader, ExecutionPlanLoader>();
         builder.Services.AddTransient<HammeringCommand>();

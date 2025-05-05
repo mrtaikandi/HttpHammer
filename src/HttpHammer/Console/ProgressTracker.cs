@@ -81,7 +81,21 @@ internal class ProgressTracker : IProgressTracker
 
         public void Increment() => _task.Increment(1);
 
-        public void Complete() => _task.StopTask();
+        public void Complete(int? value = null)
+        {
+            if (value.HasValue)
+            {
+                _task.Value(value.Value);
+            }
+
+            _task.StopTask();
+        }
+
+        public bool IsIndeterminate
+        {
+            get => _task.IsIndeterminate;
+            set => _task.IsIndeterminate = value;
+        }
 
         public void MaxValue(int maxValue) => _task.MaxValue(maxValue);
     }

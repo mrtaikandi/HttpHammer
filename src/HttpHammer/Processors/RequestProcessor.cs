@@ -26,7 +26,7 @@ public class RequestProcessor : IProcessor
     {
         if (context.Definition is not RequestDefinition request)
         {
-            throw new InvalidOperationException("RequestProcessor can only process RequestDefinition.");
+            throw new ProcessorException($"{nameof(RequestProcessor)} can only process {nameof(RequestDefinition)}.");
         }
 
         Debug.Assert(request.MaxRequests != null, "MaxRequests should not be null");
