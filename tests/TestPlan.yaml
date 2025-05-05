@@ -1,0 +1,49 @@
+variables:
+  baseUrl: http://localhost:5200
+
+warmup:
+  - request:
+      name: Authentication
+      method: POST
+      url: ${baseUrl}/auth
+      response:
+        status_code: 200
+        content:
+          access_token: =>{access_token}
+
+  - delay:
+      name: Delay for 2 seconds
+      duration: 2000
+
+  - prompt:
+      name: Asking for 2FA code
+      message: Please enter the 2FA code
+      allow_empty: false
+      secret: true
+      variable: 2fa_code
+
+  - request:
+      name: Verifying 2FA code
+      method: POST
+      url: ${baseUrl}/auth?2fa=${2fa_code}
+
+requests:
+  - name: Weather Forecast
+    max_requests: 100
+    concurrent_requests: 10
+    method: GET
+    url: ${baseUrl}/weatherforecast
+    headers:
+      Authorization: Bearer ${access_token}
+
+  - name: Hello World
+    max_requests: 10
+    concurrent_requests: 1
+    method: GET
+    url: ${baseUrl}/hello
+
+  - name: Randomly failing 30% of the requests
+    max_requests: 1000
+    concurrent_requests: 100
+    method: GET
+    url: ${baseUrl}/random-error

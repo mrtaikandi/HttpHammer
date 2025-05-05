@@ -1,4 +1,3 @@
-using HttpHammer.Plan;
 using HttpHammer.Plan.Definitions;
 
 namespace HttpHammer.Processors;
@@ -17,8 +16,7 @@ public class DelayProcessor : IProcessor
             return ProcessorResult.Success();
         }
 
-        var progress = context.Progress.Create(definition.Name, definition.Duration);
-        progress.IsIndeterminate = true;
+        var progress = context.Progress?.Create(definition.Name, definition.Duration);
 
         try
         {
@@ -26,8 +24,7 @@ public class DelayProcessor : IProcessor
         }
         finally
         {
-            progress.IsIndeterminate = false;
-            progress.Complete(definition.Duration);
+            progress?.Complete(definition.Duration);
         }
 
         return ProcessorResult.Success();

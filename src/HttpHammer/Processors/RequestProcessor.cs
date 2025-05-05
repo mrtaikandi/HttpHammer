@@ -37,7 +37,7 @@ public class RequestProcessor : IProcessor
         }
 
         _logger.LogExecutingRequest(request.Name);
-        var progress = context.Progress.Create(request.Name, maxRequests);
+        var progress = context.Progress?.Create(request.Name, maxRequests);
 
         try
         {
@@ -51,14 +51,14 @@ public class RequestProcessor : IProcessor
         }
         finally
         {
-            progress.Complete();
+            progress?.Complete();
         }
     }
 
     private async Task ExecuteConcurrentRequestAsync(
         RequestDefinition request,
         Dictionary<string, string> variables,
-        IProgress progress,
+        IProgress? progress,
         CancellationToken cancellationToken)
     {
         Debug.Assert(request.ConcurrentConnections != null, "concurrentConnections should not be null");
@@ -111,7 +111,7 @@ public class RequestProcessor : IProcessor
     private async Task<ProcessorResult> ExecuteSynchronousRequestAsync(
         RequestDefinition request,
         Dictionary<string, string> variables,
-        IProgress progress,
+        IProgress? progress,
         CancellationToken cancellationToken)
     {
         for (var i = 0; i < request.MaxRequests; i++)
@@ -143,7 +143,7 @@ public class RequestProcessor : IProcessor
             }
             finally
             {
-                progress.Increment();
+                progress?.Increment();
             }
         }
 

@@ -16,6 +16,7 @@ public class ProcessorFactory : IProcessorFactory
     {
         RequestDefinition => _serviceProvider.GetRequiredService<RequestProcessor>(),
         DelayDefinition => _serviceProvider.GetRequiredService<DelayProcessor>(),
+        PromptDefinition => _serviceProvider.GetRequiredService<PromptProcessor>(),
 
         _ => throw new NotSupportedException($"Unsupported definition type: {definition.GetType().Name}")
     };

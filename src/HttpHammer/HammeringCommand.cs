@@ -8,6 +8,7 @@ using HttpHammer.Processors;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
+using Spectre.Console.Extensions;
 
 namespace HttpHammer;
 
@@ -29,7 +30,7 @@ public class HammeringCommand : RootCommand
         IExecutionPlanLoader planLoader,
         IProcessorFactory processorFactory,
         IProfiler profiler)
-        : base("Command line load testing tool for HTTP APIs.")
+        : base("Command line tool for load testing and benchmarking HTTP APIs.")
     {
         _logger = logger;
         _applicationLifetime = applicationLifetime;
@@ -92,11 +93,12 @@ public class HammeringCommand : RootCommand
     {
         try
         {
+            _console.MarkupLine(":fire: Warming up :fire:");
+            var executionPlan = _planLoader.Load(executionPlanFilePath);
+            var result = await ProcessorWarmupDefinitionsAsync(executionPlan, cancellationToken);
+
             await _tracker.TrackAsync(async progressContext =>
             {
-                var executionPlan = _planLoader.Load(executionPlanFilePath);
-
-                var result = await ProcessorWarmupDefinitionsAsync(executionPlan, progressContext, cancellationToken);
                 if (result is SuccessProcessorResult)
                 {
                     result = await ProcessRequestsAsync(executionPlan, progressContext, cancellationToken);
@@ -123,7 +125,7 @@ public class HammeringCommand : RootCommand
         }
     }
 
-    private async Task<ProcessorResult> ProcessorWarmupDefinitionsAsync(ExecutionPlan plan, IProgressContext progressContext, CancellationToken cancellationToken)
+    private async Task<ProcessorResult> ProcessorWarmupDefinitionsAsync(ExecutionPlan plan, CancellationToken cancellationToken)
     {
         foreach (var definition in plan.WarmupDefinitions)
         {
@@ -131,7 +133,20 @@ public class HammeringCommand : RootCommand
             var processorName = processor.GetType().Name;
             _logger.LogExecutingProcessor(processorName);
 
-            var result = await processor.ExecuteAsync(new ProcessorContext(definition, plan.Variables, progressContext), cancellationToken);
+            ProcessorResult result;
+            var task = processor.ExecuteAsync(new ProcessorContext(definition, plan.Variables), cancellationToken);
+
+            if (processor.Interactive)
+            {
+                result = await task;
+            }
+            else
+            {
+                _console.Markup($"{definition.Name.EscapeMarkup()} ");
+                result = await task.Spinner(Spinner.Known.SimpleDotsScrolling);
+                _console.MarkupLine("... [green]done[/]");
+            }
+
             _logger.LogFinishedExecutingProcessor(processorName, result);
 
             if (result.HasErrors)

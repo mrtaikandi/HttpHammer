@@ -5,7 +5,7 @@ namespace HttpHammer.Processors;
 
 public sealed class ProcessorContext
 {
-    public ProcessorContext(Definition definition, Dictionary<string, string> variables, IProgressContext progress)
+    public ProcessorContext(Definition definition, Dictionary<string, string> variables, IProgressContext? progress = null)
     {
         Definition = definition;
         Progress = progress;
@@ -16,5 +16,5 @@ public sealed class ProcessorContext
 
     public Definition Definition { get; }
 
-    public IProgressContext Progress { get; }
+    public IProgressContext? Progress { get; }
 }
