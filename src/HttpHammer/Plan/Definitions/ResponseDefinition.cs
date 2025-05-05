@@ -10,5 +10,5 @@ public class ResponseDefinition
     public Dictionary<string, string>? Content { get; set; }
 
     [YamlMember(Alias = "headers")]
-    public IDictionary<string, string>? Headers { get; set; }
+    public Dictionary<string, string>? Headers { get; set; }
 }
