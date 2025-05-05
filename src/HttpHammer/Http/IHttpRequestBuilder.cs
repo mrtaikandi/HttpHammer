@@ -1,4 +1,4 @@
-using HttpHammer.Configuration;
+using HttpHammer.Plan.Definitions;
 
 namespace HttpHammer.Http;
 

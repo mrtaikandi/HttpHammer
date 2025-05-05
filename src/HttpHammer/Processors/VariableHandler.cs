@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
-namespace HttpHammer.Internals;
+namespace HttpHammer.Processors;
 
 internal sealed partial class VariableHandler : IVariableHandler
 {

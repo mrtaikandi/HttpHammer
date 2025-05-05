@@ -1,5 +1,6 @@
 using HttpHammer.Configuration;
 using HttpHammer.Console;
+using HttpHammer.Plan.Definitions;
 using HttpHammer.Processors;
 using HttpHammer.Processors.Policies;
 using Microsoft.Extensions.Logging;
@@ -29,13 +30,13 @@ public class RequestProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Requests = [],
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
         var progressContext = Substitute.For<IProgressContext>();
         var context = new ProcessorContext(plan, progressContext);
-        var processor = new RequestProcessor(_logger, _executionPolicyFactory);
+        var processor = new RequestProcessor(_logger);
 
         // Act
         var result = await processor.ExecuteAsync(context);
@@ -71,7 +72,7 @@ public class RequestProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Requests = requests,
+            RequestDefinitions = requests,
             Variables = new Dictionary<string, string>()
         };
 
@@ -80,7 +81,7 @@ public class RequestProcessorTests
         progressContext.Create(Arg.Any<string>(), Arg.Any<int>()).Returns(progress);
 
         var context = new ProcessorContext(plan, progressContext);
-        var processor = new RequestProcessor(_logger, _executionPolicyFactory);
+        var processor = new RequestProcessor(_logger);
 
         // Act
         var result = await processor.ExecuteAsync(context);
@@ -119,7 +120,7 @@ public class RequestProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Requests = requests,
+            RequestDefinitions = requests,
             Variables = new Dictionary<string, string>()
         };
 
@@ -132,7 +133,7 @@ public class RequestProcessorTests
             .Returns(_ => throw new TaskCanceledException());
 
         var context = new ProcessorContext(plan, progressContext);
-        var processor = new RequestProcessor(_logger, _executionPolicyFactory);
+        var processor = new RequestProcessor(_logger);
 
         // Act
         var result = await processor.ExecuteAsync(context);
@@ -161,7 +162,7 @@ public class RequestProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Requests = requests,
+            RequestDefinitions = requests,
             Variables = new Dictionary<string, string>()
         };
 
@@ -170,7 +171,7 @@ public class RequestProcessorTests
         progressContext.Create(Arg.Any<string>(), Arg.Any<int>()).Returns(progress);
 
         var context = new ProcessorContext(plan, progressContext);
-        var processor = new RequestProcessor(_logger, _executionPolicyFactory);
+        var processor = new RequestProcessor(_logger);
 
         using var cts = new CancellationTokenSource();
 
@@ -206,7 +207,7 @@ public class RequestProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Requests = requests,
+            RequestDefinitions = requests,
             Variables = variables
         };
 
@@ -220,7 +221,7 @@ public class RequestProcessorTests
             .Do(callInfo => { capturedContext = callInfo.Arg<ExecutionContext>(); });
 
         var context = new ProcessorContext(plan, progressContext);
-        var processor = new RequestProcessor(_logger, _executionPolicyFactory);
+        var processor = new RequestProcessor(_logger);
 
         // Act
         await processor.ExecuteAsync(context);
@@ -246,7 +247,7 @@ public class RequestProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Requests = requests,
+            RequestDefinitions = requests,
             Variables = new Dictionary<string, string>()
         };
 
@@ -255,7 +256,7 @@ public class RequestProcessorTests
         progressContext.Create(Arg.Any<string>(), Arg.Any<int>()).Returns(progress);
 
         var context = new ProcessorContext(plan, progressContext);
-        var processor = new RequestProcessor(_logger, _executionPolicyFactory);
+        var processor = new RequestProcessor(_logger);
 
         // Act
         var result = await processor.ExecuteAsync(context);
@@ -283,7 +284,7 @@ public class RequestProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Requests = requests,
+            RequestDefinitions = requests,
             Variables = new Dictionary<string, string>()
         };
 
@@ -292,7 +293,7 @@ public class RequestProcessorTests
         progressContext.Create(Arg.Any<string>(), Arg.Any<int>()).Returns(progress);
 
         var context = new ProcessorContext(plan, progressContext);
-        var processor = new RequestProcessor(_logger, _executionPolicyFactory);
+        var processor = new RequestProcessor(_logger);
 
         // Act
         var result = await processor.ExecuteAsync(context);
@@ -311,13 +312,13 @@ public class RequestProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Requests = requests,
+            RequestDefinitions = requests,
             Variables = new Dictionary<string, string>()
         };
 
         var progressContext = Substitute.For<IProgressContext>();
         var context = new ProcessorContext(plan, progressContext);
-        var processor = new RequestProcessor(_logger, _executionPolicyFactory);
+        var processor = new RequestProcessor(_logger);
 
         // Act
         var result = await processor.ExecuteAsync(context);

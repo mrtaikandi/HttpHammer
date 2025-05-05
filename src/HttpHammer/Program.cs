@@ -4,16 +4,15 @@ using HttpHammer.Console;
 using HttpHammer.Console.Renderers;
 using HttpHammer.Diagnostics;
 using HttpHammer.Http;
+using HttpHammer.Plan;
 using HttpHammer.Processors;
-using HttpHammer.Processors.Policies;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
 using Vertical.SpectreLogger;
 using Vertical.SpectreLogger.Options;
-using VariableHandler = HttpHammer.Internals.VariableHandler;
+using VariableHandler = HttpHammer.Processors.VariableHandler;
 
 namespace HttpHammer;
 
@@ -66,16 +65,10 @@ public class Program
         builder.Services.AddSingleton<IProgressTracker, ProgressTracker>();
 
         // Processors
-        builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IProcessor, WarmupProcessor>());
-        builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IProcessor, RequestProcessor>());
-        builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IProcessor, ExecutionPlanFileProcessor>());
+        builder.Services.AddSingleton<IProcessorFactory, ProcessorFactory>();
+        builder.Services.AddScoped<RequestProcessor>();
 
-        // Policies
-        builder.Services.AddSingleton<SynchronousExecutionPolicy>();
-        builder.Services.AddSingleton<ConcurrentExecutionPolicy>();
-        builder.Services.AddSingleton<IExecutionPolicyFactory, ExecutionPolicyFactory>();
-
-        // Commands
+        builder.Services.AddTransient<IExecutionPlanLoader, ExecutionPlanLoader>();
         builder.Services.AddTransient<HammeringCommand>();
 
         return builder.Build();

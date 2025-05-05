@@ -1,52 +1,38 @@
-using HttpHammer.Configuration;
+using HttpHammer.Plan.Definitions;
 using Microsoft.Extensions.Logging;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
+using ExecutionPlanYamlStaticContext = HttpHammer.Plan.Definitions.ExecutionPlanYamlStaticContext;
 
-namespace HttpHammer.Processors;
+namespace HttpHammer.Plan;
 
-public class ExecutionPlanFileProcessor : IProcessor
+public class ExecutionPlanLoader : IExecutionPlanLoader
 {
-    private readonly ILogger<ExecutionPlanFileProcessor> _logger;
+    private readonly ILogger<ExecutionPlanLoader> _logger;
 
-    public ExecutionPlanFileProcessor(ILogger<ExecutionPlanFileProcessor> logger)
+    public ExecutionPlanLoader(ILogger<ExecutionPlanLoader> logger)
     {
         _logger = logger;
     }
 
-    public int Order => 0;
-
-    public ValueTask<ProcessorResult> ExecuteAsync(ProcessorContext context, CancellationToken cancellationToken = default)
+    public ExecutionPlan Load(string filePath)
     {
-        try
-        {
-            var executionPlan = LoadExecutionPlan(context.ExecutionPlan.FilePath);
-            if (executionPlan is null)
-            {
-                return new ValueTask<ProcessorResult>(ProcessorResult.Fail("Failed to load execution plan from file."));
-            }
+        var executionPlan = LoadExecutionPlan(filePath);
 
-            NormalizeDefinitions(executionPlan);
+        NormalizeDefinitions(executionPlan);
+        ValidateExecutionPlan(executionPlan);
 
-            return ValidateExecutionPlan(executionPlan) is { } error
-                ? new ValueTask<ProcessorResult>(ProcessorResult.Fail(error))
-                : new ValueTask<ProcessorResult>(ProcessorResult.Success(executionPlan));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogExecutionError(ex);
-            return new ValueTask<ProcessorResult>(ProcessorResult.Fail($"Error processing plan: {ex.Message}"));
-        }
+        return executionPlan;
     }
 
     private static void NormalizeDefinitions(ExecutionPlan executionPlan)
     {
-        foreach (var request in executionPlan.Warmups.OfType<RequestDefinition>())
+        foreach (var request in executionPlan.WarmupDefinitions.OfType<RequestDefinition>())
         {
             Normalize(request, 1, 1);
         }
 
-        foreach (var request in executionPlan.Requests)
+        foreach (var request in executionPlan.RequestDefinitions)
         {
             Normalize(request, 100, 10);
         }
@@ -70,29 +56,27 @@ public class ExecutionPlanFileProcessor : IProcessor
         }
     }
 
-    private static string? ValidateExecutionPlan(ExecutionPlan executionPlan)
+    private static void ValidateExecutionPlan(ExecutionPlan executionPlan)
     {
-        var requests = executionPlan.Warmups
+        var requests = executionPlan.WarmupDefinitions
             .OfType<RequestDefinition>()
-            .Concat(executionPlan.Requests);
+            .Concat(executionPlan.RequestDefinitions);
 
         foreach (var request in requests)
         {
             if (string.IsNullOrWhiteSpace(request.Url))
             {
-                return $"Request '{request.Name}' URL is missing or empty.";
+                throw new ExecutionPlanLoadException($"Request '{request.Name}' URL is missing or empty.");
             }
 
             if (string.IsNullOrWhiteSpace(request.Name))
             {
-                return $"Request '{request.Method}: {request.Url}' name is missing or empty.";
+                throw new ExecutionPlanLoadException($"Request '{request.Method}: {request.Url}' name is missing or empty.");
             }
         }
-
-        return null;
     }
 
-    private ExecutionPlan? LoadExecutionPlan(string filePath)
+    private ExecutionPlan LoadExecutionPlan(string filePath)
     {
         _logger.LogPreparingExecutionPlan(filePath);
 
@@ -104,7 +88,7 @@ public class ExecutionPlanFileProcessor : IProcessor
             if (!File.Exists(filePath))
             {
                 _logger.LogFileNotFound(filePath);
-                return null;
+                return new ExecutionPlan { FilePath = filePath };
             }
 
             var deserializer = new StaticDeserializerBuilder(new ExecutionPlanYamlStaticContext())
@@ -116,36 +100,38 @@ public class ExecutionPlanFileProcessor : IProcessor
             _logger.LogYamlContent(yamlContent);
 
             var executionPlan = deserializer.Deserialize<ExecutionPlan>(yamlContent);
+            executionPlan.FilePath = filePath;
 
             // Add default variables
             executionPlan.Variables.TryAdd("timestamp", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
+
             return executionPlan;
         }
         catch (Exception ex)
         {
             _logger.LogReadFileError(ex);
-            return null;
+            throw new ExecutionPlanLoadException("Failed to load execution plan from file.", ex);
         }
     }
 }
 
-internal static partial class ExecutionPlanFileProcessorLogs
+internal static partial class HammeringPlanFileLoaderLogs
 {
     [LoggerMessage(0, LogLevel.Debug, "Preparing execution plan from '{FilePath}' YAML file")]
-    public static partial void LogPreparingExecutionPlan(this ILogger<ExecutionPlanFileProcessor> logger, string filePath);
+    public static partial void LogPreparingExecutionPlan(this ILogger<ExecutionPlanLoader> logger, string filePath);
 
     [LoggerMessage(1, LogLevel.Debug, "Full file path: {FullPath}")]
-    public static partial void LogFullFilePath(this ILogger<ExecutionPlanFileProcessor> logger, string fullPath);
+    public static partial void LogFullFilePath(this ILogger<ExecutionPlanLoader> logger, string fullPath);
 
     [LoggerMessage(2, LogLevel.Error, "Execution plan file not found: {FilePath}")]
-    public static partial void LogFileNotFound(this ILogger<ExecutionPlanFileProcessor> logger, string filePath);
+    public static partial void LogFileNotFound(this ILogger<ExecutionPlanLoader> logger, string filePath);
 
     [LoggerMessage(3, LogLevel.Debug, "YAML content: {Content}")]
-    public static partial void LogYamlContent(this ILogger<ExecutionPlanFileProcessor> logger, string content);
+    public static partial void LogYamlContent(this ILogger<ExecutionPlanLoader> logger, string content);
 
     [LoggerMessage(4, LogLevel.Error, "Failed to read execution plan file")]
-    public static partial void LogReadFileError(this ILogger<ExecutionPlanFileProcessor> logger, Exception exception);
+    public static partial void LogReadFileError(this ILogger<ExecutionPlanLoader> logger, Exception exception);
 
     [LoggerMessage(5, LogLevel.Error, "Error executing file processor")]
-    public static partial void LogExecutionError(this ILogger<ExecutionPlanFileProcessor> logger, Exception exception);
+    public static partial void LogExecutionError(this ILogger<ExecutionPlanLoader> logger, Exception exception);
 }

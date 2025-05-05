@@ -24,7 +24,7 @@ internal class HttpRequestProfilingHandler : DelegatingHandler
     {
         var requestName = GetRequestName(request);
         var startTime = _profiler.Start();
-        StringBuilder? error = null;
+        string? error = null;
 
         try
         {
@@ -35,24 +35,30 @@ internal class HttpRequestProfilingHandler : DelegatingHandler
                 return response;
             }
 
-            error = new StringBuilder();
-            error.AppendFormat(
-                CultureInfo.CurrentUICulture,
-                "{0} ({1})",
-                (int)response.StatusCode,
-                string.IsNullOrWhiteSpace(response.ReasonPhrase) ? response.StatusCode.ToString() : response.ReasonPhrase);
+            var builder = new StringBuilder()
+                .AppendFormat(
+                    CultureInfo.CurrentUICulture,
+                    "{0} ({1})",
+                    (int)response.StatusCode,
+                    string.IsNullOrWhiteSpace(response.ReasonPhrase) ? response.StatusCode.ToString() : response.ReasonPhrase);
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             if (!string.IsNullOrWhiteSpace(content))
             {
-                error.AppendLine().Append(content);
+                builder.AppendLine().Append(content);
             }
 
+            error = builder.ToString();
             return response;
+        }
+        catch (HttpRequestException rx)
+        {
+            error = rx.Message;
+            throw;
         }
         finally
         {
-            var duration = _profiler.Record(requestName, startTime, error?.ToString());
+            var duration = _profiler.Record(requestName, startTime, error);
             _logger.LogRequestCompleted(requestName, duration.TotalMilliseconds);
         }
     }

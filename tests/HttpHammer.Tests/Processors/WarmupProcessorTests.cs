@@ -4,9 +4,10 @@ using HttpHammer.Configuration;
 using HttpHammer.Console;
 using HttpHammer.Http;
 using HttpHammer.Internals;
+using HttpHammer.Plan.Definitions;
 using HttpHammer.Processors;
 using Microsoft.Extensions.Logging;
-using VariableHandler = HttpHammer.Internals.VariableHandler;
+using VariableHandler = HttpHammer.Processors.VariableHandler;
 
 namespace HttpHammer.Tests.Processors;
 
@@ -56,8 +57,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -112,8 +113,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -163,8 +164,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -207,8 +208,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -254,8 +255,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -293,8 +294,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -345,8 +346,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -390,8 +391,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -436,8 +437,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -485,8 +486,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -558,8 +559,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -618,8 +619,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -686,8 +687,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -740,8 +741,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -790,8 +791,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -844,8 +845,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -892,8 +893,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -945,8 +946,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1005,8 +1006,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = variables
         };
 
@@ -1073,8 +1074,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1131,8 +1132,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1204,8 +1205,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1245,8 +1246,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = [],
-            Requests = [],
+            WarmupDefinitions = [],
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1275,8 +1276,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = [],
-            Requests = [],
+            WarmupDefinitions = [],
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1310,8 +1311,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1365,8 +1366,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = variables
         };
 
@@ -1415,8 +1416,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1456,8 +1457,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1506,8 +1507,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
@@ -1558,8 +1559,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = variables
         };
 
@@ -1615,8 +1616,8 @@ public class WarmupProcessorTests
         var plan = new ExecutionPlan
         {
             FilePath = string.Empty,
-            Warmups = warmupRequests,
-            Requests = [],
+            WarmupDefinitions = warmupRequests,
+            RequestDefinitions = [],
             Variables = new Dictionary<string, string>()
         };
 
