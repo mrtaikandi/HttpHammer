@@ -1,17 +1,20 @@
-using HttpHammer.Configuration;
 using HttpHammer.Console;
+using HttpHammer.Plan.Definitions;
 
 namespace HttpHammer.Processors;
 
 public sealed class ProcessorContext
 {
-    public ProcessorContext(ExecutionPlan executionPlan, IProgressContext progress)
+    public ProcessorContext(Definition definition, Dictionary<string, string> variables, IProgressContext progress)
     {
-        ExecutionPlan = executionPlan;
+        Definition = definition;
         Progress = progress;
+        Variables = variables;
     }
 
-    public ExecutionPlan ExecutionPlan { get; }
+    public Dictionary<string, string> Variables { get; }
+
+    public Definition Definition { get; }
 
     public IProgressContext Progress { get; }
 }

@@ -1,8 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace HttpHammer.Internals;
+namespace HttpHammer.Processors;
 
-internal interface IVariableHandler
+public interface IVariableHandler
 {
     string Substitute(string input, IDictionary<string, string> variables);
 

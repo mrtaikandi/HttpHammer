@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using YamlDotNet.Serialization;
 
-namespace HttpHammer.Configuration;
+namespace HttpHammer.Plan.Definitions;
 
 public class Definition
 {

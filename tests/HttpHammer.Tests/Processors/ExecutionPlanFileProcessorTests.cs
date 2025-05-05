@@ -1,5 +1,6 @@
 using HttpHammer.Configuration;
 using HttpHammer.Console;
+using HttpHammer.Plan.Definitions;
 using HttpHammer.Processors;
 using Microsoft.Extensions.Logging;
 
@@ -26,10 +27,10 @@ public class ExecutionPlanFileProcessorTests
         result.IsSuccess.ShouldBeTrue(result.ToString());
         result.ShouldBeOfType<SuccessProcessorResult>();
         var successResult = (SuccessProcessorResult)result;
-        successResult.ExecutionPlan.Requests.Length.ShouldBe(1);
-        successResult.ExecutionPlan.Requests[0].Name.ShouldBe("Test Request");
-        successResult.ExecutionPlan.Requests[0].Url.ShouldBe("https://example.com/api");
-        successResult.ExecutionPlan.Requests[0].Method.ShouldBe("GET");
+        successResult.ExecutionPlan.RequestDefinitions.Length.ShouldBe(1);
+        successResult.ExecutionPlan.RequestDefinitions[0].Name.ShouldBe("Test Request");
+        successResult.ExecutionPlan.RequestDefinitions[0].Url.ShouldBe("https://example.com/api");
+        successResult.ExecutionPlan.RequestDefinitions[0].Method.ShouldBe("GET");
         successResult.ExecutionPlan.Variables.ShouldContainKey("timestamp");
     }
 
@@ -175,7 +176,7 @@ public class ExecutionPlanFileProcessorTests
         result.IsSuccess.ShouldBeTrue();
         result.ShouldBeOfType<SuccessProcessorResult>();
         var successResult = (SuccessProcessorResult)result;
-        successResult.ExecutionPlan.Requests[0].MaxRequests.ShouldBe(0);
+        successResult.ExecutionPlan.RequestDefinitions[0].MaxRequests.ShouldBe(0);
     }
 
     [Fact]
@@ -194,10 +195,10 @@ public class ExecutionPlanFileProcessorTests
         result.IsSuccess.ShouldBeTrue();
         result.ShouldBeOfType<SuccessProcessorResult>();
         var successResult = (SuccessProcessorResult)result;
-        successResult.ExecutionPlan.Warmups.Length.ShouldBe(1);
-        successResult.ExecutionPlan.Warmups[0].Name.ShouldBe("Warmup Request");
-        successResult.ExecutionPlan.Requests.Length.ShouldBe(1);
-        successResult.ExecutionPlan.Requests[0].Name.ShouldBe("Test Request");
+        successResult.ExecutionPlan.WarmupDefinitions.Length.ShouldBe(1);
+        successResult.ExecutionPlan.WarmupDefinitions[0].Name.ShouldBe("Warmup Request");
+        successResult.ExecutionPlan.RequestDefinitions.Length.ShouldBe(1);
+        successResult.ExecutionPlan.RequestDefinitions[0].Name.ShouldBe("Test Request");
     }
 
     [Fact]

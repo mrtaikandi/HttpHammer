@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using YamlDotNet.Serialization;
 
-namespace HttpHammer.Configuration;
+namespace HttpHammer.Plan.Definitions;
 
 public class ExecutionPlan
 {
@@ -13,15 +13,15 @@ public class ExecutionPlan
     public Dictionary<string, string> Variables { get; set; } = new();
 
     [YamlMember(Alias = "warmup")]
-    public WarmupDefinition[] WarmupDefinitions { get; set; } = [];
+    public WarmupDefinition[] Warmup { get; set; } = [];
 
     [YamlIgnore]
-    public Definition[] Warmups
+    public Definition[] WarmupDefinitions
     {
-        get => WarmupDefinitions.Length == 0 ? [] : WarmupDefinitions.Select(item => item.ToDefinition()).ToArray()!;
-        init => WarmupDefinitions = value.Select(WarmupDefinition.From).ToArray();
+        get => Warmup.Length == 0 ? [] : Warmup.Select(item => item.ToDefinition()).ToArray()!;
+        init => Warmup = value.Select(WarmupDefinition.From).ToArray();
     }
 
     [YamlMember(Alias = "requests")]
-    public RequestDefinition[] Requests { get; set; } = [];
+    public RequestDefinition[] RequestDefinitions { get; set; } = [];
 }

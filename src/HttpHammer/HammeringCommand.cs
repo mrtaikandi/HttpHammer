@@ -1,8 +1,9 @@
 using System.CommandLine;
-using HttpHammer.Configuration;
 using HttpHammer.Console;
 using HttpHammer.Console.Renderers;
 using HttpHammer.Diagnostics;
+using HttpHammer.Plan;
+using HttpHammer.Plan.Definitions;
 using HttpHammer.Processors;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -12,19 +13,21 @@ namespace HttpHammer;
 
 public class HammeringCommand : RootCommand
 {
-    private readonly ILogger<HammeringCommand> _logger;
     private readonly IHostApplicationLifetime _applicationLifetime;
     private readonly IAnsiConsole _console;
-    private readonly IProgressTracker _tracker;
-    private readonly IEnumerable<IProcessor> _processors;
+    private readonly ILogger<HammeringCommand> _logger;
+    private readonly IExecutionPlanLoader _planLoader;
+    private readonly IProcessorFactory _processorFactory;
     private readonly IProfiler _profiler;
+    private readonly IProgressTracker _tracker;
 
     public HammeringCommand(
         ILogger<HammeringCommand> logger,
         IHostApplicationLifetime applicationLifetime,
         IAnsiConsole console,
         IProgressTracker tracker,
-        IEnumerable<IProcessor> processors,
+        IExecutionPlanLoader planLoader,
+        IProcessorFactory processorFactory,
         IProfiler profiler)
         : base("Command line load testing tool for HTTP APIs.")
     {
@@ -32,9 +35,15 @@ public class HammeringCommand : RootCommand
         _applicationLifetime = applicationLifetime;
         _console = console;
         _tracker = tracker;
-        _processors = processors;
+        _planLoader = planLoader;
+        _processorFactory = processorFactory;
         _profiler = profiler;
 
+        ConfigureCommandOptions();
+    }
+
+    private void ConfigureCommandOptions()
+    {
         Options.Add(new Option<bool>("--debug", "-d")
         {
             Description = "Enable debug logging to the console.",
@@ -64,28 +73,40 @@ public class HammeringCommand : RootCommand
             }
         });
 
-        SetAction(ExecuteAsync);
-    }
-
-    private async Task ExecuteAsync(ParseResult parseResult, CancellationToken cancellation)
-    {
-        if (parseResult.GetValue<string>("--file") is not { } filePath)
+        SetAction(async (parseResult, cancellation) =>
         {
-            filePath = await _console.PromptForStringAsync(
-                "Please provide the path to the plan YAML configuration file:",
-                @".\plan.yaml",
-                validator: value => File.Exists(value) ? ValidationResult.Success() : ValidationResult.Error($"The specified file does not exist: {value}"),
-                cancellationToken: cancellation);
-        }
+            if (parseResult.GetValue<string>("--file") is not { } filePath)
+            {
+                filePath = await _console.PromptForStringAsync(
+                    "Please provide the path to the plan YAML configuration file:",
+                    @".\plan.yaml",
+                    value => File.Exists(value) ? ValidationResult.Success() : ValidationResult.Error($"The specified file does not exist: {value}"),
+                    cancellation);
+            }
 
-        await ExecuteAsync(filePath, cancellation);
+            await ExecuteAsync(filePath, cancellation);
+        });
     }
 
     private async Task ExecuteAsync(string executionPlanFilePath, CancellationToken cancellationToken)
     {
         try
         {
-            await _tracker.TrackAsync(context => ExecuteProcessorsAsync(context, executionPlanFilePath, cancellationToken));
+            await _tracker.TrackAsync(async progressContext =>
+            {
+                var executionPlan = _planLoader.Load(executionPlanFilePath);
+
+                var result = await ProcessorWarmupDefinitionsAsync(executionPlan, progressContext, cancellationToken);
+                if (result is SuccessProcessorResult)
+                {
+                    result = await ProcessRequestsAsync(executionPlan, progressContext, cancellationToken);
+                }
+
+                if (result is ErrorProcessorResult error)
+                {
+                    _console.DisplayErrors(error.Errors);
+                }
+            });
 
             var measurements = _profiler.GetMeasurements();
             _console.DisplayResults(measurements);
@@ -96,30 +117,51 @@ public class HammeringCommand : RootCommand
         {
             // Do nothing
         }
+        catch (ExecutionPlanLoadException lx)
+        {
+            _console.DisplayError(lx.Message);
+        }
     }
 
-    private async Task ExecuteProcessorsAsync(IProgressContext context, string filePath, CancellationToken cancellationToken)
+    private async Task<ProcessorResult> ProcessorWarmupDefinitionsAsync(ExecutionPlan plan, IProgressContext progressContext, CancellationToken cancellationToken)
     {
-        var executionPlan = new ExecutionPlan { FilePath = filePath };
-
-        foreach (var processor in _processors.OrderBy(p => p.Order))
+        foreach (var definition in plan.WarmupDefinitions)
         {
+            var processor = _processorFactory.Create(definition);
             var processorName = processor.GetType().Name;
             _logger.LogExecutingProcessor(processorName);
 
-            var result = await processor.ExecuteAsync(new ProcessorContext(executionPlan, context), cancellationToken);
-            if (result is SuccessProcessorResult success)
-            {
-                executionPlan = success.ExecutionPlan;
-            }
-            else if (result is ErrorProcessorResult error)
-            {
-                _logger.LogFinishedExecutingProcessor(processorName, error.Errors.Length);
-                _console.DisplayErrors(error.Errors);
+            var result = await processor.ExecuteAsync(new ProcessorContext(definition, plan.Variables, progressContext), cancellationToken);
+            _logger.LogFinishedExecutingProcessor(processorName, result);
 
-                break;
+            if (result.HasErrors)
+            {
+                return result;
             }
         }
+
+        return ProcessorResult.Success();
+    }
+
+    private async Task<ProcessorResult> ProcessRequestsAsync(ExecutionPlan plan, IProgressContext progressContext, CancellationToken cancellationToken)
+    {
+        var requests = plan.RequestDefinitions.Where(r => r.MaxRequests > 0).ToArray();
+        if (requests.Length == 0)
+        {
+            return ProcessorResult.Fail("No requests defined in the execution plan with MaxRequests > 0.");
+        }
+
+        _logger.LogExecutingRequests(requests.Length);
+
+        await Task.WhenAll(requests.Select(request =>
+        {
+            var processor = _processorFactory.Create(request);
+            var processorContext = new ProcessorContext(request, plan.Variables, progressContext);
+
+            return processor.ExecuteAsync(processorContext, cancellationToken);
+        }));
+
+        return ProcessorResult.Success();
     }
 }
 
@@ -128,6 +170,9 @@ internal static partial class HammeringCommandLogs
     [LoggerMessage(0, LogLevel.Debug, "Executing processor: {Processor}")]
     public static partial void LogExecutingProcessor(this ILogger<HammeringCommand> logger, string processor);
 
-    [LoggerMessage(1, LogLevel.Debug, "Finished executing processor: {Processor} with {Errors} errors")]
-    public static partial void LogFinishedExecutingProcessor(this ILogger<HammeringCommand> logger, string processor, int errors);
+    [LoggerMessage(1, LogLevel.Debug, "Finished executing processor: {Processor} with '{Result}'")]
+    public static partial void LogFinishedExecutingProcessor(this ILogger<HammeringCommand> logger, string processor, ProcessorResult result);
+
+    [LoggerMessage(2, LogLevel.Debug, "Executing {RequestsCount} requests.")]
+    public static partial void LogExecutingRequests(this ILogger<HammeringCommand> logger, int requestsCount);
 }

@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using System.Text;
-using HttpHammer.Configuration;
+using HttpHammer.Plan.Definitions;
+using HttpHammer.Processors;
 
 namespace HttpHammer.Http;
 
