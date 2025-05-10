@@ -17,6 +17,8 @@ A command line tool for load testing and benchmarking HTTP APIs. HttpHammer allo
 - Header and body customization for requests
 - Interactive mode with progress tracking
 - Support for delays and user prompts in test plans
+  
+![demo](https://github.com/user-attachments/assets/65bcbfe1-945f-4875-8fc1-38de00ef238f)
 
 ## Installation
 
