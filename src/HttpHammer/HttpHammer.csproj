@@ -29,6 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.NET.ILLink.Tasks" />
       <Folder Include="Configuration\" />
     </ItemGroup>
 
